@@ -314,9 +314,7 @@ async def aud(bot,update):
      			os.remove(file_path)
 
 async def video(bot, update):	
-    new_name = update.caption
-    name = new_name.split(":")
-    new_filename = name[1]
+    new_filename = update.caption    
     file_path = f"downloads/{new_filename}"
     message = update.message.reply_to_message
     file = message.document or message.video or message.audio
