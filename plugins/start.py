@@ -169,6 +169,7 @@ async def send_doc(client,message):
 @Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
 async def rename_and_send(bot, message):
     await video(bot, message)
+     
     #await message.delete()
 
 
@@ -206,13 +207,13 @@ async def batch_rename(client, message):
 
                 # Determine media type and invoke appropriate callback
                 if media.document:
-                    await video(bot, message)
+                    await video(client, message)
 		   # await media.delete()
                 elif media.video:
-                    await video(bot, message)
+                    await video(client, message)
 		  #  await media.delete()
                 elif media.audio:
-                    await video(bot, message)
+                    await video(client, message)
 	          #  await media.delete()
                 else:
                     # Handle other types of media (if needed)
