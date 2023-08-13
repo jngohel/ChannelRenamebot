@@ -10,6 +10,7 @@ from helper.database import  insert ,find_one,used_limit,usertype,uploadlimit,ad
 from pyrogram.file_id import FileId
 from helper.database import daily as daily_
 from helper.date import add_date ,check_expi
+from plugins.cb_data import video 
 CHANNEL = os.environ.get('CHANNEL',"")
 import datetime
 from datetime import date as date_
@@ -17,7 +18,7 @@ STRING = os.environ.get("STRING","")
 log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
-
+DB_CHANNEL_ID = -1001862896786  # Replace with your channel ID
 
 @Client.on_message(filters.private & filters.command(["start"]))
 async def start(client,message):
@@ -160,5 +161,8 @@ async def send_doc(client,message):
        		    await message.reply_text(f"""__What do you want me to do with this file?__\n**File Name** :- {filename}\n**File Size** :- {filesize}\n**Dc ID** :- {dcid}""",reply_to_message_id = message.id,reply_markup = InlineKeyboardMarkup(
        		[[ InlineKeyboardButton("📝 Rename",callback_data = "rename"),
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
-       		
-            
+       
+	
+@Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
+async def rename_and_send(bot, message):
+    await video(bot, message)
