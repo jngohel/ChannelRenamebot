@@ -1,4 +1,5 @@
 import os
+import asyncio
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 import time
 from pyrogram import Client, filters
@@ -19,6 +20,8 @@ log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001862896786  # Replace with your channel ID
+
+message_queue = asyncio.Queue()
 
 @Client.on_message(filters.private & filters.command(["start"]))
 async def start(client,message):
@@ -168,6 +171,8 @@ async def rename_and_send(bot, message):
     await video(bot, message)
     await message.delete()
 
+
+
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
@@ -182,14 +187,20 @@ async def batch_rename(client, message):
     # Get the source and destination channels
     source_channel_id = -1001514489559  # Replace with the actual source channel ID
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
+
     try:
-        # Iterate through the specified range of post IDs
+        # Enqueue messages for processing
         for post_id in range(start_post_id, end_post_id + 1):
+            await message_queue.put((source_channel_id, dest_channel_id, post_id))
+
+        # Process messages from the queue
+        while not message_queue.empty():
+            source_id, dest_id, post_id = await message_queue.get()
             try:
                 # Copy the message from the source channel
                 media = await client.copy_message(
-                    chat_id=dest_channel_id,
-                    from_chat_id=source_channel_id,
+                    chat_id=dest_id,
+                    from_chat_id=source_id,
                     message_id=post_id
                 )
 
