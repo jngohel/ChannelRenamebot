@@ -316,9 +316,10 @@ async def aud(bot,update):
 async def video(bot, update):	
     new_filename = update.caption    
     file_path = f"downloads/{new_filename}"
-    message = update.message.reply_to_message
-    file = message.document or message.video or message.audio
-    ms = await update.message.edit("```Trying To Download...```")
+    message = update.reply_to_message
+    file = update.document or update.video or update.audio
+    Rkbotz = await update.reply_text("renamimg this file....")
+    ms = await Rkbotz.edit("```Trying To Upload...```")
 
     try:
         path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("```Trying To Download...```", ms))
