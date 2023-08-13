@@ -313,8 +313,8 @@ async def aud(bot,update):
      			used_limit(update.from_user.id,neg_used)
      			os.remove(file_path)
 
-async def video(bot, update):
-    new_name = update.message.text
+async def video(bot, update):	
+    new_name = update.message.caption
     name = new_name.split(":")
     new_filename = name[1]
     file_path = f"downloads/{new_filename}"
