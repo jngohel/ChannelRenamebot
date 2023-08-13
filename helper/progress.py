@@ -42,8 +42,8 @@ async def progress_for_pyrogram(
                     tmp
                 )
             )
-        except:
-            pass
+        except Exception as e:  # Added exception type for more specific error handling
+            print(f"Error editing message: {e}")
 
 
 def humanbytes(size):
