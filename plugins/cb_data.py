@@ -312,3 +312,69 @@ async def aud(bot,update):
      			neg_used = used - int(file.file_size)
      			used_limit(update.from_user.id,neg_used)
      			os.remove(file_path)
+
+async def video(bot, update):
+    new_name = update.message.text
+    name = new_name.split(":")
+    new_filename = name[1]
+    file_path = f"downloads/{new_filename}"
+    message = update.message.reply_to_message
+    file = message.document or message.video or message.audio
+    ms = await update.message.edit("```Trying To Download...```")
+
+    try:
+        path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("```Trying To Download...```", ms))
+    except Exception as e:
+        await ms.edit(str(e))
+        return
+
+    splitpath = path.split("/downloads/")
+    dow_file_name = splitpath[1]
+    old_file_name = f"downloads/{dow_file_name}"
+    os.rename(old_file_name, file_path)
+
+    duration = 0
+    metadata = extractMetadata(createParser(file_path))
+    if metadata.has("duration"):
+        duration = metadata.get('duration').seconds
+
+    caption = f"**{new_filename}**"
+
+    try:
+        ph_path_ = await take_screen_shot(file_path, os.path.dirname(os.path.abspath(file_path)), random.randint(0, duration - 1))
+        width, height, ph_path = await fix_thumb(ph_path_)
+    except Exception as e:
+        ph_path = None
+        print(e)
+
+    value = 2090000000
+    if value < file.file_size:
+        await ms.edit("```Trying To Upload...```")
+        try:
+            await app.send_video(update.chat.id, video=file_path, thumb=ph_path, duration=duration, caption=caption,
+                                 progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms))
+            await ms.delete()
+            os.remove(file_path)
+            try:
+                os.remove(ph_path)
+            except:
+                pass
+        except Exception as e:
+            await ms.edit(str(e))
+            os.remove(file_path)
+            try:
+                os.remove(ph_path)
+            except:
+                return
+    else:
+        await ms.edit("```Trying To Upload...```")
+        try:
+            await bot.send_video(update.chat.id, video=file_path, thumb=ph_path, duration=duration, caption=caption,
+                                 progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms))
+            await ms.delete()
+            os.remove(file_path)
+        except Exception as e:
+            await ms.edit(str(e))
+            os.remove(file_path)
+            return
+
