@@ -204,6 +204,7 @@ async def vid(bot,update):
      if value < file.file_size:
          await ms.edit("```Trying To Upload...```")
          try:
+	     
              filw = await app.send_video(log_channel,video= file_path,thumb=ph_path,duration=duration ,caption = caption,progress=progress_for_pyrogram,progress_args=( "```Trying To Uploading```",  ms, c_time   ))
              from_chat = filw.chat.id
              mg_id = filw.id
@@ -353,6 +354,7 @@ async def video(bot, update):
     if value < file.file_size:
         await ms.edit("```Trying To Upload...```")
         try:
+            c_time = time.time()
             filw = await app.send_video(log_channel, video=file_path, thumb=ph_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
             from_chat = filw.chat.id
             mg_id = filw.id
@@ -374,6 +376,7 @@ async def video(bot, update):
     else:
         await ms.edit("```Trying To Upload...```")
         try:
+            c_time = time.time()
             await bot.send_video(update.chat.id, video=file_path, thumb=ph_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms))
             await ms.delete()
             os.remove(file_path)
