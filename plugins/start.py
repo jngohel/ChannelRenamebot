@@ -161,3 +161,125 @@ async def send_doc(client,message):
        		[[ InlineKeyboardButton("📝 Rename",callback_data = "rename"),
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        		
+# Command handler for /file_rename
+@Client.on_message(filters.command("file_rename") & filters.reply)
+async def file_rename_command(client, message):
+    try:
+        await message.edit("```Processing...```")
+        user_id = message.from_user.id
+        replied_message = message.reply_to_message
+
+        if replied_message.document or replied_message.video or replied_message.audio:
+            new_name = message.caption or "Untitled"  # Use caption as new filename
+            used_ = find_one(user_id)
+            used = used_["used_limit"]
+            date = used_["date"]
+
+            file = replied_message.document or replied_message.video or replied_message.audio
+            file_size = file.file_size
+            c_time = time.time()
+            
+            # Download and process the file
+            try:
+                path = await bot.download_media(
+                    message=file,
+                    progress=progress_for_pyrogram,
+                    progress_args=("```Trying To Download...```", message, c_time)
+                )
+            except Exception as e:
+                await message.edit(str(e))
+                return
+            
+            # Rename and move the file
+            splitpath = path.split("/downloads/")
+            dow_file_name = splitpath[1]
+            new_filename = new_name + os.path.splitext(dow_file_name)[1]
+            file_path = f"downloads/{new_filename}"
+            os.rename(path, file_path)
+            
+            # Process user data and caption
+            used_limit(user_id, file_size)
+            total_used = used + int(file_size)
+            used_limit(user_id, total_used)
+            data = find(user_id)
+            try:
+                c_caption = data[1]
+            except:
+                c_caption = None
+            thumb = data[0]
+            
+            duration = 0
+            metadata = extractMetadata(createParser(file_path))
+            if metadata.has("duration"):
+                duration = metadata.get('duration').seconds
+
+            if c_caption:
+                vid_list = ["filename", "filesize", "duration"]
+                new_tex = escape_invalid_curly_brackets(c_caption, vid_list)
+                caption = new_tex.format(
+                    filename=new_filename,
+                    filesize=humanbytes(file.file_size),
+                    duration=timedelta(seconds=duration)
+                )
+            else:
+                caption = f"**{new_filename}**"
+
+            # Resize and process the thumbnail image
+            if thumb:
+                ph_path = await bot.download_media(thumb)
+                Image.open(ph_path).convert("RGB").save(ph_path)
+                img = Image.open(ph_path)
+                img.resize((320, 320))
+                img.save(ph_path, "JPEG")
+                c_time = time.time()
+            else:
+                try:
+                    ph_path_ = await take_screen_shot(file_path, os.path.dirname(os.path.abspath(file_path)), random.randint(0, duration - 1))
+                    width, height, ph_path = await fix_thumb(ph_path_)
+                except Exception as e:
+                    ph_path = None
+                    print(e)
+            
+            # Upload the processed file
+            try:
+                await message.edit("```Trying To Upload...```")
+                if file_size > 2090000000:
+                    await bot.send_video(
+                        user_id,
+                        video=file_path,
+                        thumb=ph_path,
+                        duration=duration,
+                        caption=caption,
+                        progress=progress_for_pyrogram,
+                        progress_args=("```Trying To Uploading```", message, c_time)
+                    )
+                else:
+                    await app.send_video(
+                        user_id,
+                        video=file_path,
+                        thumb=ph_path,
+                        duration=duration,
+                        caption=caption,
+                        progress=progress_for_pyrogram,
+                        progress_args=("```Trying To Uploading```", message, c_time)
+                    )
+            except Exception as e:
+                neg_used = used - int(file_size)
+                used_limit(user_id, neg_used)
+                await message.edit(str(e))
+                return
+
+            # Clean up
+            os.remove(file_path)
+            if ph_path:
+                try:
+                    os.remove(ph_path)
+                except:
+                    pass
+
+            await message.edit("File renamed and uploaded successfully!")
+        else:
+            await message.edit("Please reply to a media file.")
+
+    except Exception as ex:
+        await message.edit(f"An error occurred: {ex}")
