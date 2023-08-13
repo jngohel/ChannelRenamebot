@@ -318,11 +318,13 @@ async def video(bot, update):
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
     file = update.document or update.video or update.audio
-    Rkbotz = await update.reply_text("renamimg this file....")
+    Rkbotz = await update.reply_text("renamimg this file....")    
     ms = await Rkbotz.edit("```Trying To Upload...```")
-
+    time.sleep(2)
+    c_time = time.time()
     try:
-        path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("```Trying To Download...```", ms))
+        path = await bot.download_media(message = file , progress=progress_for_pyrogram,progress_args=( "``` Trying To Download...```",  ms, c_time   ))
+
     except Exception as e:
         await ms.edit(str(e))
         return
@@ -349,15 +351,18 @@ async def video(bot, update):
     value = 2090000000
     if value < file.file_size:
         await ms.edit("```Trying To Upload...```")
-        try:
-            await app.send_video(update.chat.id, video=file_path, thumb=ph_path, duration=duration, caption=caption,
-                                 progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms))
-            await ms.delete()
-            os.remove(file_path)
-            try:
-                os.remove(ph_path)
-            except:
-                pass
+	try:
+	    filw = await app.send_video(log_channel,video= file_path,thumb=ph_path,duration=duration ,caption = caption,progress=progress_for_pyrogram,progress_args=( "```Trying To Uploading```",  ms, c_time   ))
+                 from_chat = filw.chat.id
+                 mg_id = filw.id
+                 time.sleep(2)
+                 await bot.copy_message(update.from_user.id,from_chat,mg_id)                     
+	         await ms.delete()
+                 os.remove(file_path)
+                 try:
+                     os.remove(ph_path)
+                 except:
+                     pass			 
         except Exception as e:
             await ms.edit(str(e))
             os.remove(file_path)
