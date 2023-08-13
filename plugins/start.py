@@ -166,3 +166,49 @@ async def send_doc(client,message):
 @Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
 async def rename_and_send(bot, message):
     await video(bot, message)
+    await message.delete()
+
+@Client.on_message(filters.private & filters.command(["batch"]))
+async def batch_rename(client, message):
+    # Check if the command has the correct number of arguments
+    if len(message.command) != 3:
+        await message.reply_text("Usage: /batch start_post_id end_post_id")
+        return
+
+    # Extract command arguments
+    start_post_id = int(message.command[1])
+    end_post_id = int(message.command[2])
+
+    # Get the source and destination channels
+    source_channel_id = -1001514489559  # Replace with the actual source channel ID
+    dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
+    try:
+        # Iterate through the specified range of post IDs
+        for post_id in range(start_post_id, end_post_id + 1):
+            try:
+                # Copy the message from the source channel
+                media = await client.copy_message(
+                    chat_id=dest_channel_id,
+                    from_chat_id=source_channel_id,
+                    message_id=post_id
+                )
+
+                # Determine media type and invoke appropriate callback
+                if media.document:
+                    await video(bot, message)
+		    await media.delete()
+                elif media.video:
+                    await video(bot, message)
+		    await media.delete()
+                elif media.audio:
+                    await video(bot, message)
+	            await media.delete()
+                else:
+                    # Handle other types of media (if needed)
+                    pass
+
+            except Exception as e:
+                await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+    except Exception as e:
+        await message.reply_text(f"Error: {str(e)}")
