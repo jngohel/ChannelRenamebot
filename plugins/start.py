@@ -22,6 +22,12 @@ botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001862896786  # Replace with your channel ID
 
 message_queue = asyncio.Queue()
+# Define a function to extract message ID from a link
+def extract_post_id(link):
+    match = re.search(r"/(\d+)/?$", link)
+    if match:
+        return int(match.group(1))
+    return None
 
 @Client.on_message(filters.private & filters.command(["start"]))
 async def start(client,message):
@@ -32,10 +38,10 @@ async def start(client,message):
 	    await message.reply_text(text =f"""Hello 👋 {message.from_user.first_name},\n\nI'm File Rename Bot, Please Sent Me Any Telegram Document Or Video And Enter New Filename To Rename It.""",
 	reply_to_message_id = message.id ,  
 	reply_markup=InlineKeyboardMarkup([[
-	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/pr0fess0r99") 
+	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/Rk_botowner") 
            ],[
-           InlineKeyboardButton("🔗 Support", url="https://t.me/TechProjectsChats"),
-           InlineKeyboardButton("📢 Updates", url="https://t.me/TechProjectsUpdates")]]))
+           InlineKeyboardButton("🔗 Support", url="https://t.me/Rkbotzsupport"),
+           InlineKeyboardButton("📢 Updates", url="https://t.me/Rk_botz")]]))
 	    return
 	if id:
 	    if old == True:
@@ -44,10 +50,10 @@ async def start(client,message):
 	            await message.reply_text(text =f"""Hello 👋 {message.from_user.first_name},\n\nI'm File Rename Bot, Please Sent Me Any Telegram Document Or Video And Enter New Filename To Rename It.""",    
         reply_to_message_id = message.id ,  
 	reply_markup=InlineKeyboardMarkup([[
-	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/pr0fess0r99") 
+	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/Rk_botowner") 
            ],[
-           InlineKeyboardButton("🔗 Support", url="https://t.me/TechProjectsChats"),
-           InlineKeyboardButton("📢 Updates", url="https://t.me/TechProjectsUpdates")]]))
+           InlineKeyboardButton("🔗 Support", url="https://t.me/Rkbotzsupport"),
+           InlineKeyboardButton("📢 Updates", url="https://t.me/Rk_botz")]]))
 	        except:
 	             return
 	    else:
@@ -59,11 +65,10 @@ async def start(client,message):
 	         await message.reply_text(text =f"""Hello 👋 {message.from_user.first_name},\n\nI'm File Rename Bot, Please Sent Me Any Telegram Document Or Video And Enter New Filename To Rename It.""",
 	reply_to_message_id = message.id ,  
 	reply_markup=InlineKeyboardMarkup([[
-	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/pr0fess0r99") 
+	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/Rk_botowner") 
            ],[
-           InlineKeyboardButton("🔗 Support", url="https://t.me/TechProjectsChats"),
-           InlineKeyboardButton("📢 Updates", url="https://t.me/TechProjectsUpdates")]]))
-	         
+           InlineKeyboardButton("🔗 Support", url="https://t.me/Rkbotzsupport"),
+           InlineKeyboardButton("📢 Updates", url="https://t.me/Rk_botz")]]))
 
 
 
@@ -178,13 +183,67 @@ async def rename_and_send(bot, message):
 async def batch_rename(bot, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
-        await message.reply_text("Usage: /batch start_post_id end_post_id")
+        await message.reply("Usage: /batch start_post_link end_post_link")
         return
 
-    # Extract command arguments
-    start_post_id = int(message.command[1])
-    end_post_id = int(message.command[2])
+    # Extract command arguments (post links)
+    start_post_link = message.command[1]
+    end_post_link = message.command[2]
 
+    # Extract message IDs from the links
+    start_post_id = extract_post_id(start_post_link)
+    end_post_id = extract_post_id(end_post_link)
+
+    if start_post_id is None or end_post_id is None:
+        await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
+        return
+    # Get the source and destination channels
+    source_channel_id = -1001514489559  # Replace with the actual source channel ID
+    dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
+
+    try:
+        # Enqueue messages for processing
+        for post_id in range(start_post_id, end_post_id + 1):
+            await message_queue.put((source_channel_id, dest_channel_id, post_id))
+
+        # Process messages from the queue
+        while not message_queue.empty():
+            source_id, dest_id, post_id = await message_queue.get()
+            try:
+                # Copy the message from the source channel
+		await message.reply_text("Batch renameing started...")
+                Rkbotz = await bot.copy_message(
+                    chat_id=dest_id,
+                    from_chat_id=source_id,
+                    message_id=post_id
+                )
+
+                # Determine media type and invoke appropriate callback
+                await video(bot, Rkbotz)
+		await bot.delete_messages(dest_id, Rkbotz.id)
+                await bot.delete_messages(dest_id, Rkbotz.id + 1)
+            except Exception as e:
+                await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+            await message.reply_text("Batch renameing completed...")
+                
+
+    except Exception as e:
+        await message.reply_text(f"Error: {str(e)}")
+# Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
+@Client.on_message(filters.private & filters.command(["rename_all"]))
+async def all_rename(bot, message):
+    # Check if the command has the correct number of arguments
+    if len(message.command) != 3:
+        await message.reply("Usage: /rename_all last_post_link")
+        return
+	    
+    
+    end_post_link = message.command[1]
+
+    # Extract message IDs from the links
+    start_post_id = 
+    end_post_id = extract_post_id(end_post_link)
+	
     # Get the source and destination channels
     source_channel_id = -1001514489559  # Replace with the actual source channel ID
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
