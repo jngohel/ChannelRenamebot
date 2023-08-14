@@ -13,6 +13,7 @@ from datetime import timedelta,datetime
 from helper.ffmpeg import take_screen_shot,fix_thumb
 from helper.progress import humanbytes
 from helper.set import escape_invalid_curly_brackets
+from helper.database import get_thumbnail
 
 log_channel = int(os.environ.get("LOG_CHANNEL", ""))
 
@@ -322,7 +323,7 @@ async def video(bot, update):
     new_filename = update.caption
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
-    thumb = data[0]
+    thumb = get_thumbnail(update.chat.id)
     file = update.document or update.video or update.audio
     Rkbotz = await update.reply_text("renaming this file....")
     ms = await Rkbotz.edit("```Trying To Upload...```")
