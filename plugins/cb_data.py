@@ -4,6 +4,7 @@ from pyrogram.types import (  InlineKeyboardButton, InlineKeyboardMarkup,ForceRe
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from helper.database import *
+import re
 import os
 import random
 from PIL import Image
@@ -318,10 +319,18 @@ async def aud(bot,update):
      			neg_used = used - int(file.file_size)
      			used_limit(update.from_user.id,neg_used)
      			os.remove(file_path)
-			
+
+def clean_caption(caption):
+    # Remove @username mentions
+    caption = re.sub(r'@\w+\b', '', caption)
+    
+    # Remove links (http/https)
+    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
+    
+    return caption.strip()
 # For channel 
 async def video(bot, update):
-    new_filename = update.caption
+    new_filename = clean_caption(update.caption)
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
     c_thumb = get_thumbnail(update.chat.id)
@@ -347,7 +356,7 @@ async def video(bot, update):
     if metadata.has("duration"):
         duration = metadata.get('duration').seconds
 
-    caption = f"**{new_filename}**"
+    caption = f"**[@Filmy_Fundas]➛** <i>{new_filename}</i>"
     thumb_path = None
     
     if file.thumbs or c_thumb:
@@ -360,7 +369,7 @@ async def video(bot, update):
         try:
             with Image.open(thumb_path) as img:
                 img = img.convert("RGB")
-                img = img.resize((320, 320))
+                img = img.resize((320, 240))
                 img.save(thumb_path, "JPEG")
         except Exception as e:
             await ms.edit(f"Thumbnail processing error: {str(e)}")
