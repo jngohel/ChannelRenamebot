@@ -6,6 +6,7 @@ DB_URL = os.environ.get("DB_URL","")
 mongo = pymongo.MongoClient(DB_URL)
 db = mongo[DB_NAME]
 dbcol = db["user"]
+channel_col = db["channel"]
 
 #Total User 
 
@@ -107,3 +108,32 @@ def delete(id):
 	
 def find_one(id):
 	return dbcol.find_one({"_id":id})
+
+def insert_channel(chat_id, channel_name):
+    channel_id = int(chat_id)
+    channel_data = {"_id": channel_id, "channel_name": channel_name, "thumbnail": None}
+    try:
+        channel_col.insert_one(channel_data)
+    except:
+        pass
+
+def set_channel_thumbnail(chat_id, file_id):
+    channel_id = int(chat_id)
+    channel_col.update_one({"_id": channel_id}, {"$set": {"thumbnail": file_id}})
+
+def get_channel_thumbnail(chat_id):
+    document = channel_col.find_one({"_id": chat_id})
+    if document and "thumbnail" in document:
+        return document["thumbnail"]
+    else:
+        return None
+
+def delete_channel(chat_id):
+    channel_col.delete_one({"_id": chat_id})
+
+def get_channel_thumbnail(chat_id):
+    document = channel_col.find_one({"_id": chat_id})
+    if document and "thumbnail" in document:
+        return document["thumbnail"]
+    else:
+        return None
