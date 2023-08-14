@@ -169,10 +169,8 @@ async def send_doc(client,message):
 @Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
 async def rename_and_send(bot, message):
     await video(bot, message)
-	await message.delete()
-     
-    #await message.delete()
-
+    await bot.delete_messages(DB_CHANNEL_ID, message.id)
+  
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
