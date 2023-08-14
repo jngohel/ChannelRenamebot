@@ -199,7 +199,7 @@ async def batch_rename(bot, message):
             source_id, dest_id, post_id = await message_queue.get()
             try:
                 # Copy the message from the source channel
-                media = await bot.copy_message(
+                Rkbotz = await bot.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
                     message_id=post_id
@@ -207,13 +207,13 @@ async def batch_rename(bot, message):
 
                 # Determine media type and invoke appropriate callback
                 if media.document:
-                    await video(bot, message)
+                    await video(bot, Rkbotz)
 		   # await media.delete()
                 elif media.video:
-                    await video(bot, message)
+                    await video(bot, Rkbotz)
 		  #  await media.delete()
                 elif media.audio:
-                    await video(bot, message)
+                    await video(bot, Rkbotz)
 	          #  await media.delete()
                 else:
                     # Handle other types of media (if needed)
