@@ -1,4 +1,3 @@
-"""pr0fess0r99"""
 from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,ForceReply)
 from pyrogram import Client , filters
 
@@ -18,8 +17,7 @@ async def upgrade(bot,update):
 
 	UPI 🆔 Details
 
-        Google pay 📲 joynathnet4@oksbi
-        Phonepe 📲 bijoy.nath@ybl
+        jngohel@upi
 	
 	After Payment Send Screenshots Of 
         Payment To Admin"""
@@ -45,8 +43,7 @@ async def upgradecm(bot,message):
 
 	UPI 🆔 Details
 
-        Google pay 📲 joynathnet4@oksbi
-        Phonepe 📲 bijoy.nath@ybl
+        jngohel@upi
 	
 	After Payment Send Screenshots Of 
         Payment To Admin"""
