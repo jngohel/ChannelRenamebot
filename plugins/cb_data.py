@@ -330,11 +330,9 @@ async def video(bot, update):
     ms = await Rkbotz.edit("```Trying To Upload...```")
     time.sleep(2)
     c_time = time.time()
-   # c_thumb = await db.get_thumbnail(update.message.chat.id)
-	
+
     try:
         path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("``` Trying To Download...```", ms, c_time))
-
     except Exception as e:
         await ms.edit(str(e))
         return
@@ -350,53 +348,53 @@ async def video(bot, update):
         duration = metadata.get('duration').seconds
 
     caption = f"**{new_filename}**"
-    if (file.thumbs or c_thumb):
-         if c_thumb:
-             ph_path = await bot.download_media(c_thumb) 
-         else:
-             ph_path = await bot.download_media(file.thumbs[0].file_id)
-         Image.open(ph_path).convert("RGB").save(ph_path)
-         img = Image.open(ph_path)
-         img.resize((320, 320))
-         img.save(ph_path, "JPEG")
+    thumb_path = None
+    
+    if file.thumbs or c_thumb:
+        if c_thumb:
+            thumb_path = await bot.download_media(c_thumb)
+        else:
+            thumb_id = file.thumbs[0].file_id
+            thumb_path = await bot.download_media(thumb_id)
+
+        try:
+            with Image.open(thumb_path) as img:
+                img = img.convert("RGB")
+                img = img.resize((320, 320))
+                img.save(thumb_path, "JPEG")
+        except Exception as e:
+            await ms.edit(f"Thumbnail processing error: {str(e)}")
+
     value = 2090000000
     if value < file.file_size:
         await ms.edit("```Trying To Upload...```")
         try:
             c_time = time.time()
-            filw = await app.send_video(log_channel, video=file_path, thumb=ph_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
+            filw = await app.send_video(log_channel, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
             from_chat = filw.chat.id
             mg_id = filw.id
             time.sleep(2)
             await bot.copy_message(update.from_user.id, from_chat, mg_id)
             await ms.delete()
             os.remove(file_path)
-	#    update.delete()
             try:
-                os.remove(ph_path)
-		#update.delete()
+                os.remove(thumb_path)
             except:
                 pass
         except Exception as e:
             await ms.edit(str(e))
             os.remove(file_path)
-	  #  update.delete()
             try:
-                os.remove(ph_path)
-	#	await update.delete()
+                os.remove(thumb_path)
             except:
                 return
     else:
         await ms.edit("```Trying To Upload...```")
         try:
             c_time = time.time()
-            await bot.send_video(update.chat.id, video=file_path, thumb=ph_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```",   ms, c_time   ))
-       #     update.delete()
+            await bot.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
             os.remove(file_path)
-	#    await ms.delete()
         except Exception as e:
             await ms.edit(str(e))
             os.remove(file_path)
-	#    update.delete()
             return
-
