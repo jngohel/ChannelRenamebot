@@ -384,7 +384,7 @@ async def video(bot, update):
             await bot.send_video(update.chat.id, video=file_path, thumb=ph_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```",   ms, c_time   ))
        #     update.delete()
             os.remove(file_path)
-	    await ms.delete()
+	#    await ms.delete()
         except Exception as e:
             await ms.edit(str(e))
             os.remove(file_path)
