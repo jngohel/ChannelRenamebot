@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
-from helper.database import find, delthumb, addthumb
+from helper.database import find, delthumb, addthumb, set_channel_thumbnail
 
-DB_CHANNEL = -1001862896786
+#DB_CHANNEL = -1001862896786
 
 @Client.on_message(filters.private & filters.command(['viewthumb']))
 async def viewthumb(client,message):
@@ -25,8 +25,10 @@ async def addthumbs(client,message):
 	await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
 	
 
-@Client.on_message(filters.photo)
-async def add_thumbs(client,message):
-    file_id = str(message.photo.file_id)
-    addthumb(message.chat.id, file_id)
-    await message.reply_text("**Your Custom Thumbnail Was Saved Successfully ☑️**")
+
+@Client.on_message(filters.channel & filters.photo)
+async def add_channel_tumbnail(client, message):
+	file_id = str(message.photo.file_id)
+	set_channel_thumbnail(message.chat.id , file_id)
+	await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
+	
