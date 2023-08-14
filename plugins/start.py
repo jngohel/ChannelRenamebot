@@ -241,7 +241,7 @@ async def all_rename(bot, message):
     end_post_link = message.command[1]
 
     # Extract message IDs from the links
-    start_post_id = 
+    start_post_id = 1
     end_post_id = extract_post_id(end_post_link)
 	
     # Get the source and destination channels
