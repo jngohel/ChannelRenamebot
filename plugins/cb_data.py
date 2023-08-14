@@ -346,12 +346,21 @@ async def video(bot, update):
 
     caption = f"**{new_filename}**"
 
-    try:
-        ph_path_ = await take_screen_shot(file_path, os.path.dirname(os.path.abspath(file_path)), random.randint(0, duration - 1))
-        width, height, ph_path = await fix_thumb(ph_path_)
-    except Exception as e:
-        ph_path = default_thumbnail_url
-        print(e)
+    if thumb:
+     		ph_path = await bot.download_media(thumb)
+     		Image.open(ph_path).convert("RGB").save(ph_path)
+     		img = Image.open(ph_path)
+     		img.resize((320, 320))
+     		img.save(ph_path, "JPEG")
+     		c_time = time.time()
+     		
+     else:
+     		try:
+     		    ph_path_ = await take_screen_shot(file_path,os.path.dirname(os.path.abspath(file_path)), random.randint(0, duration - 1))
+     		    width, height, ph_path = await fix_thumb(ph_path_)
+     		except Exception as e:
+     		    ph_path = None
+     		    print(e)
 
     value = 2090000000
     if value < file.file_size:
