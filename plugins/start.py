@@ -229,7 +229,7 @@ async def batch_rename(bot, message):
             
             # Corrected indentation
                 
-    await message.reply_text("Batch renaming completed...")  
+        await message.reply_text("Batch renaming completed...")  
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
@@ -275,6 +275,6 @@ async def all_rename(bot, message):
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
             
               # Corrected indentation
-    await message.reply_text("All renaming completed...")
+        await message.reply_text("All renaming completed...")
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
