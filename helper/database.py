@@ -73,7 +73,13 @@ def addpre(chat_id):
 def addpredata(chat_id):
     dbcol.update_one({"_id":chat_id},{"$set":{"prexdate":None}})
     
-  
+def get_thumbnail(chat_id):
+    document = dbcol.find_one({"_id": chat_id})
+    if document and "file_id" in document:
+        return document["file_id"]
+    else:
+        return None
+
 def daily(chat_id,date):
 	  dbcol.update_one({"_id":chat_id},{"$set":{"daily":date}})
 	  
