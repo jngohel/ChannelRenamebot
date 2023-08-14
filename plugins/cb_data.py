@@ -323,7 +323,7 @@ async def video(bot, update):
     new_filename = update.caption
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
-    thumb = get_thumbnail(update.chat.id)
+ #   thumb = get_thumbnail(update.chat.id)
     file = update.document or update.video or update.audio
     Rkbotz = await update.reply_text("renaming this file....")
     ms = await Rkbotz.edit("```Trying To Upload...```")
@@ -346,12 +346,21 @@ async def video(bot, update):
     if metadata.has("duration"):
         duration = metadata.get('duration').seconds
 
-    caption = f"**{new_filename}**"     
-    ph_path = await bot.download_media(thumb)
-    Image.open(ph_path).convert("RGB").save(ph_path)
-    img = Image.open(ph_path)
-    img.resize((320, 320))
-    img.save(ph_path, "JPEG")     		     
+    caption = f"**{new_filename}**"
+    if thumb:	    
+            ph_path = await bot.download_media(thumb)
+            Image.open(ph_path).convert("RGB").save(ph_path)
+            img = Image.open(ph_path)
+            img.resize((320, 320))
+            img.save(ph_path, "JPEG")
+    else:
+	    try:
+     		ph_path_ = await take_screen_shot(file_path,os.path.dirname(os.path.abspath(file_path)), random.randint(0, duration - 1))
+     		width, height, ph_path = await fix_thumb(ph_path_)
+            except Exception as e:
+     		ph_path = None
+     		print(e)
+	    
     value = 2090000000
     if value < file.file_size:
         await ms.edit("```Trying To Upload...```")
