@@ -27,8 +27,8 @@ async def upgrade(bot,update):
 	await update.message.edit(text = text,reply_markup = keybord)
 	
 
-@Client.on_message(filters.private & filters.command(["upgrade"]))
-async def upgradecm(bot,message):
+@Client.on_message(filters.private & filters.command(["plans"]))
+async def upgrade_cm(bot,message):
 	text = """**Free Plan User**
 	Daily Upload Limit 2GB
 	Price 0
