@@ -206,19 +206,7 @@ async def batch_rename(bot, message):
                 )
 
                 # Determine media type and invoke appropriate callback
-                if media.document:
-                    await video(bot, Rkbotz)
-		   # await media.delete()
-                elif media.video:
-                    await video(bot, Rkbotz)
-		  #  await media.delete()
-                elif media.audio:
-                    await video(bot, Rkbotz)
-	          #  await media.delete()
-                else:
-                    # Handle other types of media (if needed)
-                    pass
-
+                await video(bot, Rkbotz)
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
 
