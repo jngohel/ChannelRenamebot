@@ -20,7 +20,7 @@ STRING = os.environ.get("STRING","")
 log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
-DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
+DB_CHANNEL_ID = -1001862896786  # Replace with your channel ID
 
 message_queue = asyncio.Queue()
 # Define a function to extract message ID from a link
@@ -199,8 +199,8 @@ async def batch_rename(bot, message):
         await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
         return
     # Get the source and destination channels
-    source_channel_id = -1001900711105  # Replace with the actual source channel ID
-    dest_channel_id = -1001835537776    # Replace with the actual destination channel ID
+    source_channel_id = -1001514489559  # Replace with the actual source channel ID
+    dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
     await message.reply_text("Batch renaming started...")  
     try:
         # Enqueue messages for processing
