@@ -25,7 +25,7 @@ async def addthumbs(client,message):
 	await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
 	
 
-@Client.on_message(DB_CHANNEL & filters.photo)
+@Client.on_message(filters.photo)
 async def add_thumbs(client,message):
     file_id = str(message.photo.file_id)
     addthumb(message.chat.id, file_id)
