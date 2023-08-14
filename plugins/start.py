@@ -170,11 +170,12 @@ async def send_doc(client,message):
 async def rename_and_send(bot, message):
     await video(bot, message)
     await bot.delete_messages(DB_CHANNEL_ID, message.id)
+    await bot.delete_messages(DB_CHANNEL_ID, message.id + 1)
   
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
-async def batch_rename(client, message):
+async def batch_rename(bot, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
         await message.reply_text("Usage: /batch start_post_id end_post_id")
@@ -198,7 +199,7 @@ async def batch_rename(client, message):
             source_id, dest_id, post_id = await message_queue.get()
             try:
                 # Copy the message from the source channel
-                media = await client.copy_message(
+                media = await bot.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
                     message_id=post_id
@@ -206,13 +207,13 @@ async def batch_rename(client, message):
 
                 # Determine media type and invoke appropriate callback
                 if media.document:
-                    await video(client, message)
+                    await video(bot, message)
 		   # await media.delete()
                 elif media.video:
-                    await video(client, message)
+                    await video(bot, message)
 		  #  await media.delete()
                 elif media.audio:
-                    await video(client, message)
+                    await video(bot, message)
 	          #  await media.delete()
                 else:
                     # Handle other types of media (if needed)
