@@ -14,7 +14,7 @@ from datetime import timedelta,datetime
 from helper.ffmpeg import take_screen_shot,fix_thumb
 from helper.progress import humanbytes
 from helper.set import escape_invalid_curly_brackets
-from helper.database import get_thumbnail
+#from helper.database import get_thumbnail
 
 log_channel = int(os.environ.get("LOG_CHANNEL", ""))
 
