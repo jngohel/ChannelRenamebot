@@ -199,6 +199,7 @@ async def batch_rename(bot, message):
             source_id, dest_id, post_id = await message_queue.get()
             try:
                 # Copy the message from the source channel
+		await message.reply_text("Batch renameing started...")
                 Rkbotz = await bot.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
@@ -207,8 +208,12 @@ async def batch_rename(bot, message):
 
                 # Determine media type and invoke appropriate callback
                 await video(bot, Rkbotz)
+		await bot.delete_messages(dest_id, Rkbotz.id)
+                await bot.delete_messages(dest_id, Rkbotz.id + 1)
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+            await message.reply_text("Batch renameing completed...")
+                
 
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
