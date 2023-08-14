@@ -24,7 +24,7 @@ async def upgrade(bot,update):
 	After Payment Send Screenshots Of 
         Payment To Admin"""
 	keybord = InlineKeyboardMarkup([[ 
-        			InlineKeyboardButton("👮 Admin", url = "https://t.me/pr0fess0r99")], 
+        			InlineKeyboardButton("👮 Admin", url = "https://t.me/JNGohell")], 
         			[InlineKeyboardButton("Cancel ✖️", callback_data = "cancel")  ]])
 	await update.message.edit(text = text,reply_markup = keybord)
 	
@@ -51,7 +51,7 @@ async def upgradecm(bot,message):
 	After Payment Send Screenshots Of 
         Payment To Admin"""
 	keybord = InlineKeyboardMarkup([[ 
-        			InlineKeyboardButton("👮 Admin", url = "https://t.me/pr0fess0r99")], 
+        			InlineKeyboardButton("👮 Admin", url = "https://t.me/JNGohell")], 
         			[InlineKeyboardButton("Cancel ✖️", callback_data = "cancel")  ]])
 	await update.message.edit(text = text,reply_markup = keybord)
 	
