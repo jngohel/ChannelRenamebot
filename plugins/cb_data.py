@@ -324,12 +324,14 @@ async def video(bot, update):
     new_filename = update.caption
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
-    thumb = get_thumbnail(update.chat.id)
+    c_thumb = get_thumbnail(update.chat.id)
     file = update.document or update.video or update.audio
     Rkbotz = await update.reply_text("renaming this file....")
     ms = await Rkbotz.edit("```Trying To Upload...```")
     time.sleep(2)
     c_time = time.time()
+   # c_thumb = await db.get_thumbnail(update.message.chat.id)
+	
     try:
         path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("``` Trying To Download...```", ms, c_time))
 
@@ -348,17 +350,15 @@ async def video(bot, update):
         duration = metadata.get('duration').seconds
 
     caption = f"**{new_filename}**"
-    if thumb:	    
-            ph_path = await bot.download_media(thumb)
-            Image.open(ph_path).convert("RGB").save(ph_path)
-            img = Image.open(ph_path)
-            img.resize((320, 320))
-            img.save(ph_path, "JPEG")
-    else:
-
-     		ph_path_ = await take_screen_shot(file_path,os.path.dirname(os.path.abspath(file_path)), random.randint(0, duration - 1))
-     		width, height, ph_path = await fix_thumb(ph_path_)
-	    
+    if (media.thumbs or c_thumb):
+         if c_thumb:
+             ph_path = await bot.download_media(c_thumb) 
+         else:
+             ph_path = await bot.download_media(media.thumbs[0].file_id)
+         Image.open(ph_path).convert("RGB").save(ph_path)
+         img = Image.open(ph_path)
+         img.resize((320, 320))
+         img.save(ph_path, "JPEG")
     value = 2090000000
     if value < file.file_size:
         await ms.edit("```Trying To Upload...```")
