@@ -201,7 +201,7 @@ async def batch_rename(bot, message):
     # Get the source and destination channels
     source_channel_id = -1001514489559  # Replace with the actual source channel ID
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
-
+    await message.reply_text("Batch renaming started...")  
     try:
         # Enqueue messages for processing
         for post_id in range(start_post_id, end_post_id + 1):
@@ -210,7 +210,7 @@ async def batch_rename(bot, message):
         # Process messages from the queue
         while not message_queue.empty():
             source_id, dest_id, post_id = await message_queue.get()
-            await message.reply_text("Batch renaming started...")  # Corrected indentation
+            # Corrected indentation
 
             try:
                 # Copy the message from the source channel
@@ -227,9 +227,9 @@ async def batch_rename(bot, message):
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
             
-            await message.reply_text("Batch renaming completed...")  # Corrected indentation
+            # Corrected indentation
                 
-
+    await message.reply_text("Batch renaming completed...")  
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
@@ -250,7 +250,7 @@ async def all_rename(bot, message):
     # Get the source and destination channels
     source_channel_id = -1001514489559  # Replace with the actual source channel ID
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
-
+    await message.reply_text("All renaming started...")  # Corrected indentation            
     try:
         # Enqueue messages for processing
         for post_id in range(start_post_id, end_post_id + 1):
@@ -259,8 +259,6 @@ async def all_rename(bot, message):
         # Process messages from the queue
         while not message_queue.empty():
             source_id, dest_id, post_id = await message_queue.get()
-            await message.reply_text("All renaming started...")  # Corrected indentation
-
             try:
                 # Copy the message from the source channel
                 Rkbotz = await bot.copy_message(
@@ -276,7 +274,7 @@ async def all_rename(bot, message):
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
             
-            await message.reply_text("All renaming completed...")  # Corrected indentation
-
+              # Corrected indentation
+    await message.reply_text("All renaming completed...")
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
