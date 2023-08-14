@@ -324,7 +324,7 @@ async def video(bot, update):
     new_filename = update.caption
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
-    c_thumb = get_thumbnail(update.chat.id)
+    c_thumb = data[0]
     file = update.document or update.video or update.audio
     Rkbotz = await update.reply_text("renaming this file....")
     ms = await Rkbotz.edit("```Trying To Upload...```")
