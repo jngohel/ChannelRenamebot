@@ -24,19 +24,6 @@ async def addthumbs(client,message):
 	addthumb(message.chat.id , file_id)
 	await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
 	
-@Client.on_message(DB_CHANNEL & filters.command(['view_thumb']))
-async def view_thumb(client,message):
-    print(message.chat.id)
-    thumb = find(int(message.chat.id))[0]
-    if thumb:
-        await client.send_photo(message.chat.id, photo=f"{thumb}")
-    else:
-        await message.reply_text("**You Don't Have Any Custom Thumbnail ✖️**")
-
-@Client.on_message(DB_CHANNEL & filters.command(['del_thumb']))
-async def remove_thumb(client,message):
-    delthumb(int(message.chat.id))
-    await message.reply_text("**Your Custom Thumbnail Was Deleted Successfully ☑️**")
 
 @Client.on_message(DB_CHANNEL & filters.photo)
 async def add_thumbs(client,message):
