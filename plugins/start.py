@@ -174,7 +174,22 @@ async def send_doc(client,message):
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        
 	
+@Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
+async def rename_and_send(bot, message):
+    try:
+        thumbnail_message = await bot.get_messages(filters.chat(DB_CHANNEL_ID) & filters.photo)
 
+        # Check if the new message contains a photo
+        if thumbnail_message.photo:
+            file_id = str(thumbnail_message.photo.file_id)
+            await video(bot, message, file_id)
+            await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
+            await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
+        else:
+            return
+    
+    except Exception as e:
+        print("An error occurred:", str(e))
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
@@ -201,7 +216,7 @@ async def batch_rename(client, message):
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
 
     # Ask user for a thumbnail image
-    await message.reply_text("Please provide a thumbnail image for the batch.\n\n send your tumbnail pic here 👉 f'https://t.me/c/{DB_CHANNEL_ID}'")
+    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
 
     # Store data for later use
     batch_data[message.chat.id] = {
@@ -212,11 +227,11 @@ async def batch_rename(client, message):
     }
 
 # Handler for receiving the thumbnail image
-@Client.on_message(filters.chat(DB_CHANNEL_ID) & filters.photo)
+@Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
     if chat_id not in batch_data:
-        await message.reply("No data found. Use /batch or /rename_all command first in bot pm.")
+        await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm tumbnail then reply image with /set_thumbnail.**")
         return
     
     data = batch_data.pop(chat_id)
@@ -228,8 +243,7 @@ async def thumbnail_received(client, message):
     
     thumbnail_file_id = str(message.photo.file_id)
 
-    Rk = await message.reply_text("Batch renaming started...")
-    
+    await message.reply_text("renaming started...")
 
     try:
         # Enqueue messages for processing
@@ -257,7 +271,7 @@ async def thumbnail_received(client, message):
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
 
-        await message.reply_text("Batch renaming completed...")
+        await message.reply_text("renaming completed...")
 
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
@@ -280,13 +294,13 @@ async def all_rename(bot, message):
     # Get the source and destination channels
     source_channel_id = -1001900711105  # Replace with the actual source channel ID
     dest_channel_id = -1001835537776    # Replace with the actual destination channel ID
-    await message.reply_text("Please provide a thumbnail image for the rename all.\n\n send your tumbnail pic here 👉 f'https://t.me/c/{DB_CHANNEL_ID}'")
+    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
 
     # Store data for later use
     batch_data[message.chat.id] = {
         "start_post_id": start_post_id,
         "end_post_id": end_post_id,
-        "source_channel_id": -1001514489559,  # Replace with the actual source channel ID
-        "dest_channel_id": -1001862896786,   # Replace with the actual destination channel ID
-    }
-    
+        "source_channel_id": -1001900711105,  # Replace with the actual source channel ID
+        "dest_channel_id": -1001835537776,   # Replace with the actual destination channel ID
+	}
+	
