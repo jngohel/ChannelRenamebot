@@ -228,12 +228,11 @@ async def batch_rename(client, message):
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
-    data = batch_data.pop(chat_id)
-    if data is None:
+    if chat_id not in batch_data:
         await message.reply("No batch data found. Use /batch command first.")
         return
     
-    await client.storage.delete(f"batch:{chat_id}")
+    data = batch_data.pop(chat_id)
     
     start_post_id = data["start_post_id"]
     end_post_id = data["end_post_id"]
