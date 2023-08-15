@@ -23,6 +23,8 @@ botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001862896786  # Replace with your channel ID
 
 message_queue = asyncio.Queue()
+
+batch_data = {}
 # Define a function to extract message ID from a link
 def extract_post_id(link):
     match = re.search(r"/(\d+)/?$", link)
