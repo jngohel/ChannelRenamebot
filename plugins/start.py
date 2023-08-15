@@ -229,7 +229,7 @@ async def batch_rename(client, message):
 
 # Handler for receiving the thumbnail image
 @Client.on_message(filters.private & filters.photo)
-async def thumbnail_received(client, message: Message):
+async def thumbnail_received(client, message):
     chat_id = message.chat.id
     data = await client.storage.get(f"batch:{chat_id}")
     if data is None:
