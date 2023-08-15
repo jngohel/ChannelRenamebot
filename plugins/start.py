@@ -21,6 +21,7 @@ log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
+batch_data = {}
 
 message_queue = asyncio.Queue()
 # Define a function to extract message ID from a link
