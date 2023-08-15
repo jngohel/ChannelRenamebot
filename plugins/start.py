@@ -11,6 +11,7 @@ from helper.progress import humanbytes
 from helper.database import  insert ,find_one,used_limit,usertype,uploadlimit,addpredata,total_rename,total_size
 from pyrogram.file_id import FileId
 from helper.database import daily as daily_
+from helper.database import addthumb
 from helper.date import add_date ,check_expi
 from plugins.cb_data import video 
 CHANNEL = os.environ.get('CHANNEL',"")
@@ -21,9 +22,10 @@ log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
-batch_data = {}
 
 message_queue = asyncio.Queue()
+
+batch_data = {}
 # Define a function to extract message ID from a link
 def extract_post_id(link):
     match = re.search(r"/(\d+)/?$", link)
@@ -173,6 +175,9 @@ async def send_doc(client,message):
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        
 	
+
+
+
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
@@ -193,8 +198,8 @@ async def batch_rename(client, message):
         return
 
     # Get the source and destination channels
-    source_channel_id = -1001900711105  # Replace with the actual source channel ID
-    dest_channel_id = -1001835537776    # Replace with the actual destination channel ID
+    source_channel_id = -1001514489559  # Replace with the actual source channel ID
+    dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
 
     # Ask user for a thumbnail image
     await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
@@ -212,8 +217,13 @@ async def batch_rename(client, message):
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
     if chat_id not in batch_data:
-        await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm tumbnail then reply image with /set_thumbnail.**")
-        return
+        await message.reply("**No batch data found. Use /batch or /rename_all in bot pm command first.**")        
+    else:
+        file_id = str(message.photo.file_id)
+        addthumb(message.chat.id, file_id)
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	    
+#	    return 
+    
     
     data = batch_data.pop(chat_id)
     
@@ -245,9 +255,11 @@ async def thumbnail_received(client, message):
 
                 # Determine media type and invoke appropriate callback
                 await video(client, Rkbotz, thumbnail_file_id)
-
+                
                 # Delete the original message from the destination channel
                 await client.delete_messages(dest_id, Rkbotz.id)
+                await client.delete_messages(dest_id, Rkbotz.id + 1)
+		    
 
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
@@ -275,7 +287,7 @@ async def all_rename(bot, message):
     # Get the source and destination channels
     source_channel_id = -1001900711105  # Replace with the actual source channel ID
     dest_channel_id = -1001835537776    # Replace with the actual destination channel ID
-    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+    await message.reply_text("Please provide a thumbnail image for the Renameing. Send a photo.")
 
     # Store data for later use
     batch_data[message.chat.id] = {
