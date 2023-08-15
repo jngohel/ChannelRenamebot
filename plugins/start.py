@@ -191,7 +191,7 @@ async def rename_and_send(bot, message):
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
-async def batch_rename(bot, message):
+async def batch_rename(client, message: Message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
         await message.reply("Usage: /batch start_post_link end_post_link")
@@ -208,40 +208,76 @@ async def batch_rename(bot, message):
     if start_post_id is None or end_post_id is None:
         await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
         return
+
     # Get the source and destination channels
     source_channel_id = -1001514489559  # Replace with the actual source channel ID
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
-    await message.reply_text("Batch renaming started...")  
+
+    # Ask user for a thumbnail image
+    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+
+    # Store data for later use
+    await client.storage.set(
+        f"batch:{message.chat.id}",
+        {
+            "start_post_id": start_post_id,
+            "end_post_id": end_post_id,
+            "source_channel_id": source_channel_id,
+            "dest_channel_id": dest_channel_id
+        }
+    )
+
+# Handler for receiving the thumbnail image
+@Client.on_message(filters.private & filters.photo)
+async def thumbnail_received(client, message: Message):
+    chat_id = message.chat.id
+    data = await client.storage.get(f"batch:{chat_id}")
+    if data is None:
+        await message.reply("No batch data found. Use /batch command first.")
+        return
+    
+    await client.storage.delete(f"batch:{chat_id}")
+    
+    start_post_id = data["start_post_id"]
+    end_post_id = data["end_post_id"]
+    source_channel_id = data["source_channel_id"]
+    dest_channel_id = data["dest_channel_id"]
+    
+    thumbnail_file_id = message.photo[-1].file_id
+
+    await message.reply_text("Batch renaming started...")
+
     try:
         # Enqueue messages for processing
         for post_id in range(start_post_id, end_post_id + 1):
-            await message_queue.put((source_channel_id, dest_channel_id, post_id))
+            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
         # Process messages from the queue
         while not message_queue.empty():
-            source_id, dest_id, post_id = await message_queue.get()
-            # Corrected indentation
+            source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
             try:
                 # Copy the message from the source channel
-                Rkbotz = await bot.copy_message(
+                Rkbotz = await client.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
                     message_id=post_id
                 )
 
                 # Determine media type and invoke appropriate callback
-                await video(bot, Rkbotz)
-                await bot.delete_messages(dest_id, Rkbotz.id)
-                await bot.delete_messages(dest_id, Rkbotz.id + 1)
+                await video(client, Rkbotz, thumbnail_file_id)
+
+                # Delete the original message from the destination channel
+                await client.delete_messages(dest_id, Rkbotz.id)
+
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-            
-            # Corrected indentation
-                
-        await message.reply_text("Batch renaming completed...")  
+
+        await message.reply_text("Batch renaming completed...")
+
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
+
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
 async def all_rename(bot, message):
