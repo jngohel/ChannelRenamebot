@@ -329,11 +329,11 @@ def clean_caption(caption):
     
     return caption.strip()
 # For channel 
-async def video(bot, update):
+async def video(bot, update, file_id):
     new_filename = clean_caption(update.caption)
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
-    c_thumb = get_channel_thumbnail(update.chat.id)
+    c_thumb = file_id
     file = update.document or update.video or update.audio
     Rkbotz = await update.reply_text("renaming this file....")
     ms = await Rkbotz.edit("```Trying To Upload...```")
@@ -361,7 +361,7 @@ async def video(bot, update):
     try:
        with Image.open(thumb_path) as img:
 	       img = img.convert("RGB")
-	       img = img.resize((320, 180))
+	       #img = img.resize((320, 180))
 	       img.save(thumb_path, "JPEG")
             
             
