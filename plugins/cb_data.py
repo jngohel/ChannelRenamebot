@@ -329,11 +329,11 @@ def clean_caption(caption):
     
     return caption.strip()
 # For channel 
-async def video(bot, update):
+async def video(bot, update, file_id):
     new_filename = clean_caption(update.caption)
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
-    c_thumb = get_thumbnail(update.chat.id)
+    c_thumb = file_id
     file = update.document or update.video or update.audio
     Rkbotz = await update.reply_text("renaming this file....")
     ms = await Rkbotz.edit("```Trying To Upload...```")
@@ -357,22 +357,28 @@ async def video(bot, update):
         duration = metadata.get('duration').seconds
 
     caption = f"**[@Filmy_Fundas]➛** <i>{new_filename}</i>"
-    thumb_path = None
-    
-    if file.thumbs or c_thumb:
-        if c_thumb:
-            thumb_path = await bot.download_media(c_thumb)
-        else:
-            thumb_id = file.thumbs[0].file_id
-            thumb_path = await bot.download_media(thumb_id)
+    thumb_path = await bot.download_media(c_thumb) 
+    try:
+       with Image.open(thumb_path) as img:
+	       img = img.convert("RGB")
+	       #img = img.resize((320, 180))
+	       img.save(thumb_path, "JPEG")
+            
+            
+ #   if file.thumbs or c_thumb:
+      #  if c_thumb:
+         #   thumb_path = await bot.download_media(c_thumb)
+      #  else:
+           # thumb_id = file.thumbs[0].file_id
+           # thumb_path = await bot.download_media(thumb_id)
 
-        try:
-            with Image.open(thumb_path) as img:
-                img = img.convert("RGB")
-                img = img.resize((320, 240))
-                img.save(thumb_path, "JPEG")
-        except Exception as e:
-            await ms.edit(f"Thumbnail processing error: {str(e)}")
+        
+            #with Image.open(thumb_path) as img:
+               # img = img.convert("RGB")
+            #    img = img.resize((320, 240))
+             #   img.save(thumb_path, "JPEG")
+    except Exception as e:
+        await ms.edit(f"Thumbnail processing error: {str(e)}")
 
     value = 2090000000
     if value < file.file_size:
