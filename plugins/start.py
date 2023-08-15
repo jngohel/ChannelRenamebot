@@ -217,7 +217,7 @@ async def batch_rename(client, message):
 async def handle_messages(client, message):
     chat_id = message.chat.id
     
-    if filters.command("set_thumbnail")(message):
+    if filters.command("set_thumbnail")(message.command):
         file_id = str(message.photo.file_id)
         addthumb(chat_id, file_id)
         await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
