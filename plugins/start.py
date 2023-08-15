@@ -219,18 +219,16 @@ async def thumbnail_received(client, message):
     try:
         if chat_id not in batch_data:
             await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.**")
-	    data = batch_data.pop(chat_id)
         else:
             file_id = str(message.photo.file_id)
             addthumb(message.chat.id, file_id)
             await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
-            return 
     except Exception as e:
         await message.reply(f"An error occurred: {str(e)}")
 
     
     
-    
+    data = batch_data.pop(chat_id)
     
     start_post_id = data["start_post_id"]
     end_post_id = data["end_post_id"]
