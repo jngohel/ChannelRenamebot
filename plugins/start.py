@@ -176,16 +176,11 @@ async def send_doc(client,message):
 async def rename_and_send(bot, message):
     try:
         await message.reply_text("Please provide a thumbnail image.")
-
-        # Check if the message contains a photo
-        if message.photo:
-            photo = message.photo[-1]
-            file_id = photo.file_id
-            await video(bot, message, file_id)
-            await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
-            await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
-        else:
-            await message.reply_text("Please provide a valid image.")
+        photo = message.photo[-1]
+        file_id = photo.file_id
+        await video(bot, message, file_id)
+        await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
+        await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
     except Exception as e:
         print("An error occurred:", str(e))
 
