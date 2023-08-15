@@ -356,7 +356,7 @@ async def video(bot, update, file_id):
     if metadata.has("duration"):
         duration = metadata.get('duration').seconds
 
-    caption = f"**[@Filmy_Fundas]➛** <i>{new_filename}</i>"
+    caption = f"**<i>[@Filmy_Fundas]➛</i>** <i>{new_filename}</i>"
     thumb_path = await bot.download_media(c_thumb) 
     try:
        with Image.open(thumb_path) as img:
