@@ -217,8 +217,8 @@ async def batch_rename(client, message):
     await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
 
     # Store data for later use
-    await client.storage.set(
-        f"batch:{message.chat.id}",
+    await client.get_storage("batch").set(
+        f"{message.chat.id}",
         {
             "start_post_id": start_post_id,
             "end_post_id": end_post_id,
