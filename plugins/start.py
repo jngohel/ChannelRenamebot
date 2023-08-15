@@ -191,7 +191,7 @@ async def rename_and_send(bot, message):
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
-async def batch_rename(client, message: Message):
+async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
         await message.reply("Usage: /batch start_post_link end_post_link")
