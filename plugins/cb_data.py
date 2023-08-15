@@ -385,7 +385,7 @@ async def video(bot, update, file_id):
         await ms.edit("```Trying To Upload...```")
         try:
             c_time = time.time()
-            filw = await app.send_video(log_channel, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
+            filw = await app.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
             from_chat = filw.chat.id
             mg_id = filw.id
             time.sleep(2)
