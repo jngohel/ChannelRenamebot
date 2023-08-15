@@ -174,11 +174,20 @@ async def send_doc(client,message):
 	
 @Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
 async def rename_and_send(bot, message):
-    await video(bot, message)
-    await bot.delete_messages(DB_CHANNEL_ID, message.id)
-    await bot.delete_messages(DB_CHANNEL_ID, message.id + 1)
-  
+    try:
+        await message.reply_text("Please provide a thumbnail image.")
 
+        # Check if the message contains a photo
+        if message.photo:
+            photo = message.photo[-1]
+            file_id = photo.file_id
+            await video(bot, message, file_id)
+            await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
+            await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
+        else:
+            await message.reply_text("Please provide a valid image.")
+    except Exception as e:
+        print("An error occurred:", str(e))
 
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(bot, message):
