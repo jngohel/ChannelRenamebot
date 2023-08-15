@@ -180,7 +180,7 @@ async def rename_and_send(bot, message):
         # Check if the new message contains a photo
         if thumbnail_message.photo:
             file_id = str(thumbnail_message.photo.file_id)
-	    await video(bot, message, file_id)
+            await video(bot, message, file_id)
             await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
             await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
         else:
@@ -188,6 +188,7 @@ async def rename_and_send(bot, message):
     
     except Exception as e:
         print("An error occurred:", str(e))
+
 
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(bot, message):
