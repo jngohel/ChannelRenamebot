@@ -213,18 +213,18 @@ async def batch_rename(client, message):
     }
 
 # Handler for receiving the thumbnail image
-@Client.on_message((filters.private & filters.photo) | (filters.command("set_thumbnail") & filters.reply & filters.photo))
-async def handle_messages(client, message):
+@Client.on_message(filters.private & filters.photo)
+async def thumbnail_received(client, message):
     chat_id = message.chat.id
-    
-    if filters.command("set_thumbnail")(message.command):
+    if chat_id not in batch_data:
+        await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm thumbnail then reply image with /set_thumbnail.**")
+        return
+
+    if message.command and message.command[0] == "set_thumbnail":
         file_id = str(message.photo.file_id)
         addthumb(chat_id, file_id)
         await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
-    else:
-        if chat_id not in batch_data:
-            await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm thumbnail then reply image with /set_thumbnail.**")
-            return
+
     
     data = batch_data.pop(chat_id)
     
