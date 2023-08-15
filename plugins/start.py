@@ -241,7 +241,7 @@ async def thumbnail_received(client, message):
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
     
-    thumbnail_file_id = message.photo[-1].file_id
+    thumbnail_file_id = str(message.photo.file_id)
 
     await message.reply_text("Batch renaming started...")
 
