@@ -220,7 +220,7 @@ async def thumbnail_received(client, message):
         await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm thumbnail then reply image with /set_thumbnail.**")
         return
 
-    if message.command and message.command[0] == "set_thumbnail":
+    if message.reply_to_message and message.reply_to_message.command and message.reply_to_message.command[0] == "set_thumbnail":
         file_id = str(message.photo.file_id)
         addthumb(chat_id, file_id)
         await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
