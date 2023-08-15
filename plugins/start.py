@@ -264,7 +264,7 @@ async def thumbnail_received(client, message):
 
                 # Determine media type and invoke appropriate callback
                 await video(client, Rkbotz, thumbnail_file_id)
-
+                await ms.delete()
                 # Delete the original message from the destination channel
                 await client.delete_messages(dest_id, Rkbotz.id)
 
