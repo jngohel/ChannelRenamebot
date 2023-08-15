@@ -222,7 +222,7 @@ async def thumbnail_received(client, message):
         file_id = str(message.photo.file_id)
         addthumb(message.chat.id, file_id)
         await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	    
-	    return 
+#	    return 
     
     
     data = batch_data.pop(chat_id)
