@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from helper.database import find, delthumb, addthumb, set_channel_thumbnail
+from helper.database import find, delthumb, addthumb
 
 #DB_CHANNEL = -1001862896786
 
