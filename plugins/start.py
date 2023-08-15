@@ -217,21 +217,18 @@ async def batch_rename(client, message):
     await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
 
     # Store data for later use
-    await client.get_storage("batch").set(
-        f"{message.chat.id}",
-        {
-            "start_post_id": start_post_id,
-            "end_post_id": end_post_id,
-            "source_channel_id": source_channel_id,
-            "dest_channel_id": dest_channel_id
-        }
-    )
+    batch_data[message.chat.id] = {
+        "start_post_id": start_post_id,
+        "end_post_id": end_post_id,
+        "source_channel_id": -1001514489559,  # Replace with the actual source channel ID
+        "dest_channel_id": -1001862896786,   # Replace with the actual destination channel ID
+    }
 
 # Handler for receiving the thumbnail image
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
-    data = await client.storage.get(f"batch:{chat_id}")
+    data = batch_data.pop(chat_id)
     if data is None:
         await message.reply("No batch data found. Use /batch command first.")
         return
