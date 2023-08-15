@@ -133,7 +133,5 @@ def delete_channel(chat_id):
 
 def get_channel_thumbnail(chat_id):
     document = channel_col.find_one({"_id": chat_id})
-    if document and "file_id" in document:
-        return document["file_id"]
-    else:
-        return None
+    return document["file_id"]
+    
