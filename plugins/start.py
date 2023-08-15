@@ -217,8 +217,6 @@ async def batch_rename(client, message):
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
     if chat_id not in batch_data:
-        await message.reply("**No batch data found. Use /batch or /rename_all in bot pm command first.**")        
-    else:
         file_id = str(message.photo.file_id)
         addthumb(message.chat.id, file_id)
         await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	    
