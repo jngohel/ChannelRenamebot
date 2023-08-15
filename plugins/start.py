@@ -175,11 +175,16 @@ async def send_doc(client,message):
 @Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
 async def rename_and_send(bot, message):
     try:
-        await message.reply_text("Please provide a thumbnail image.")
-        file_id = str(photo.file_id)
-        await video(bot, message, file_id)
-        await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
-        await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
+        thumbnail_message = await bot.listen(filters.chat(DB_CHANNEL_ID) & filters.photo & ~filters.edited)
+
+        # Check if the new message contains a photo
+        if thumbnail_message.photo:
+            file_id = str(thumbnail_message.photo.file_id)
+        else:
+            return
+    await video(bot, message, file_id)
+    await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
+    await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
     except Exception as e:
         print("An error occurred:", str(e))
 
