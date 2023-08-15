@@ -119,7 +119,7 @@ def insert_channel(chat_id, channel_name):
 
 def set_channel_thumbnail(chat_id, file_id):
     channel_id = int(chat_id)
-    channel_col.update_one({"_id": channel_id}, {"$set": {"thumbnail": file_id}})
+    channel_col.update_one({"_id": channel_id}, {"$set": {"file_id": file_id}})
 
 def get_channel_thumbnail(chat_id):
     document = channel_col.find_one({"_id": chat_id})
@@ -133,7 +133,7 @@ def delete_channel(chat_id):
 
 def get_channel_thumbnail(chat_id):
     document = channel_col.find_one({"_id": chat_id})
-    if document and "thumbnail" in document:
-        return document["thumbnail"]
+    if document and "file_id" in document:
+        return document["file_id"]
     else:
         return None
