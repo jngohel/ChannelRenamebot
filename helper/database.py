@@ -111,7 +111,7 @@ def find_one(id):
 
 def insert_channel(chat_id, channel_name):
     channel_id = int(chat_id)
-    channel_data = {"_id": channel_id, "channel_name": channel_name, "thumbnail": None}
+    channel_data = {"_id": channel_id, "channel_name": channel_name, "file_id": None}
     try:
         channel_col.insert_one(channel_data)
     except:
