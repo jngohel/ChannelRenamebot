@@ -216,9 +216,15 @@ async def batch_rename(client, message):
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
-    if chat_id not in batch_data:
-        await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.**")
-        return
+    try:
+        if chat_id not in batch_data:
+            await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.**")
+        else:
+            file_id = str(message.photo.file_id)
+            addthumb(message.chat.id, file_id)
+            await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
+    except Exception as e:
+        await message.reply(f"An error occurred: {str(e)}")
 
     
     
