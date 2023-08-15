@@ -10,7 +10,7 @@ from helper.progress import humanbytes
 
 from helper.database import  insert ,find_one,used_limit,usertype,uploadlimit,addpredata,total_rename,total_size
 from pyrogram.file_id import FileId
-from helper.database import daily as daily_
+from helper.database import daily as daily_, addthumbs
 from helper.date import add_date ,check_expi
 from plugins.cb_data import video 
 CHANNEL = os.environ.get('CHANNEL',"")
@@ -174,22 +174,7 @@ async def send_doc(client,message):
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        
 	
-@Client.on_message(filters.chat(DB_CHANNEL_ID) & (filters.document | filters.video))
-async def rename_and_send(bot, message):
-    try:
-        thumbnail_message = await bot.get_messages(filters.chat(DB_CHANNEL_ID) & filters.photo)
 
-        # Check if the new message contains a photo
-        if thumbnail_message.photo:
-            file_id = str(thumbnail_message.photo.file_id)
-            await video(bot, message, file_id)
-            await bot.delete_messages(DB_CHANNEL_ID, message.message_id)
-            await bot.delete_messages(DB_CHANNEL_ID, message.message_id + 1)
-        else:
-            return
-    
-    except Exception as e:
-        print("An error occurred:", str(e))
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
@@ -227,12 +212,18 @@ async def batch_rename(client, message):
     }
 
 # Handler for receiving the thumbnail image
-@Client.on_message(filters.private & filters.photo)
-async def thumbnail_received(client, message):
+@Client.on_message((filters.private & filters.photo) | (filters.command("set_thumbnail") & filters.reply & filters.photo))
+async def handle_messages(client, message):
     chat_id = message.chat.id
-    if chat_id not in batch_data:
-        await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm tumbnail then reply image with /set_thumbnail.**")
-        return
+    
+    if filters.command("set_thumbnail")(message):
+        file_id = str(message.photo.file_id)
+        addthumb(chat_id, file_id)
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
+    else:
+        if chat_id not in batch_data:
+            await message.reply("**No batch data found. Use /batch or rename all in bot pm command first.\n\n If you want to use this image as bit pm thumbnail then reply image with /set_thumbnail.**")
+            return
     
     data = batch_data.pop(chat_id)
     
