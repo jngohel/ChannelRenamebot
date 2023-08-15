@@ -357,7 +357,7 @@ async def video(bot, update):
         duration = metadata.get('duration').seconds
 
     caption = f"**[@Filmy_Fundas]➛** <i>{new_filename}</i>"
-    thumb_path = await bot.download_media(thumb_id) 
+    thumb_path = await bot.download_media(c_thumb) 
     try:
        with Image.open(thumb_path) as img:
 	       img = img.convert("RGB")
@@ -377,8 +377,8 @@ async def video(bot, update):
                # img = img.convert("RGB")
             #    img = img.resize((320, 240))
              #   img.save(thumb_path, "JPEG")
-        except Exception as e:
-            await ms.edit(f"Thumbnail processing error: {str(e)}")
+    except Exception as e:
+        await ms.edit(f"Thumbnail processing error: {str(e)}")
 
     value = 2090000000
     if value < file.file_size:
