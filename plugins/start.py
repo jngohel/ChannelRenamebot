@@ -10,7 +10,8 @@ from helper.progress import humanbytes
 
 from helper.database import  insert ,find_one,used_limit,usertype,uploadlimit,addpredata,total_rename,total_size
 from pyrogram.file_id import FileId
-from helper.database import daily as daily_, addthumbs
+from helper.database import daily as daily_
+from helper.database import addthumb
 from helper.date import add_date ,check_expi
 from plugins.cb_data import video 
 CHANNEL = os.environ.get('CHANNEL',"")
