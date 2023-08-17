@@ -174,15 +174,6 @@ async def send_doc(client,message):
        		[[ InlineKeyboardButton("📝 Rename",callback_data = "rename"),
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        
-@Client.on_message(filters.command(["cancel"]) & filters.private)
-async def cancel_batch(_, message):
-    chat_id = message.chat.id
-    if chat_id in batch_data:
-        batch_data.pop(chat_id)
-        await message.reply("Renaming process cancelled.")
-    else:
-        await message.reply("There is no active renaming process.")	
-
 
 
 @Client.on_message(filters.private & filters.command(["batch"]))
