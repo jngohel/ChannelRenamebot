@@ -174,7 +174,14 @@ async def send_doc(client,message):
        		[[ InlineKeyboardButton("📝 Rename",callback_data = "rename"),
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        
-	
+@Client.on_message(filters.command(["cancel"]) & filters.private)
+async def cancel_batch(_, message: Message):
+    chat_id = message.chat.id
+    if chat_id in batch_data:
+        batch_data.pop(chat_id)
+        await message.reply("Renaming process cancelled.")
+    else:
+        await message.reply("There is no active renaming process.")	
 
 
 
@@ -211,6 +218,8 @@ async def batch_rename(client, message):
         "source_channel_id": -1001514489559,  # Replace with the actual source channel ID
         "dest_channel_id": -1001862896786,   # Replace with the actual destination channel ID
     }
+
+
 
 # Handler for receiving the thumbnail image
 @Client.on_message(filters.private & filters.photo)
