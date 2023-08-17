@@ -175,7 +175,7 @@ async def send_doc(client,message):
        		InlineKeyboardButton("Cancel ❎",callback_data = "cancel")  ]]))
        
 @Client.on_message(filters.command(["cancel"]) & filters.private)
-async def cancel_batch(_, message: Message):
+async def cancel_batch(_, message):
     chat_id = message.chat.id
     if chat_id in batch_data:
         batch_data.pop(chat_id)
