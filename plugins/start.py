@@ -295,3 +295,12 @@ async def all_rename(bot, message):
         "dest_channel_id": -1001835537776,   # Replace with the actual destination channel ID
 	}
 	
+@Client.on_message(filters.private & filters.command(["cancel"]))
+async def cancel_batch_rename(client, message):
+    chat_id = message.chat.id
+    if chat_id in batch_data:
+        batch_data.pop(chat_id)
+        await message.reply_text("Batch renaming has been canceled.")
+    else:
+        await message.reply_text("No batch renaming process is currently active.")
+	
