@@ -415,7 +415,7 @@ async def video(bot, update, file_id):
             os.remove(file_path)
             return
 		
-@@Client.on_callback_query(filters.regex('confirm'))
+@Client.on_callback_query(filters.regex('confirm'))
 async def confirm_data(bot, callback_query):
 	
         chat_id = callback_query.chat.id
