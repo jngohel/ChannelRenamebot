@@ -224,19 +224,56 @@ async def thumbnail_received(client, message):
     if chat_id not in batch_data:
         file_id = str(message.photo.file_id)
         addthumb(message.chat.id, file_id)
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
-        return 
-    
-    batch_confirmations[chat_id] = True
-    confirm_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Confirm", callback_data="confirm"),
-         InlineKeyboardButton("Cancel", callback_data="cancel")]
-    ])
-        
-    await message.reply_text(
-        "Do you want to use this photo as the custom thumbnail?",
-        reply_markup=confirm_markup
-    )
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	                
+    else:
+        file_id = str(message.photo.file_id)
+        batch_data[chat_id] = {"thumbnail": file_id}
+        await message.reply_text("**Custom Thumbnail Saved. Send /confirm to proceed.**")
+
+@Client.on_message(filters.private & filters.command("confirm"))
+async def confirm_command(client, message):
+    chat_id = message.chat.id
+    if chat_id in batch_data:
+        data = batch_data.pop(chat_id)
+
+        start_post_id = data["start_post_id"]
+        end_post_id = data["end_post_id"]
+        source_channel_id = data["source_channel_id"]
+        dest_channel_id = data["dest_channel_id"]
+        thumbnail_file_id = data["thumbnail"]
+
+        await message.reply_text("Batch renaming started...")
+
+        try:
+            # Enqueue messages for processing
+            for post_id in range(start_post_id, end_post_id + 1):
+                await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+
+            # Process messages from the queue
+            while not message_queue.empty():
+                source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
+
+                try:
+                    # Copy the message from the source channel
+                    copied_message = await client.copy_message(
+                        chat_id=dest_id,
+                        from_chat_id=source_id,
+                        message_id=post_id
+                    )
+
+                    # Determine media type and invoke appropriate callback
+                    await video(client, copied_message, thumbnail_file_id)
+
+                    # Delete the original message from the destination channel
+                    await client.delete_messages(dest_id, copied_message.message_id)
+
+                except Exception as e:
+                    await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+            await message.reply_text("Batch renaming completed.")
+
+        except Exception as e:
+            await message.reply_text(f"Error: {str(e)}")
     
 	
 # callback data 
