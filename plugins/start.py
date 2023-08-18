@@ -217,7 +217,7 @@ async def batch_rename(client, message):
 # Main message processing function
 
 @Client.on_callback_query(filters.regex('confirm'))
-async def confirm_batch_data(_, callback_query: CallbackQuery):
+async def confirm_batch_data(_, callback_query):
     try:
         chat_id = callback_query.message.chat.id
         if chat_id in batch_confirmations and batch_confirmations[chat_id]:
