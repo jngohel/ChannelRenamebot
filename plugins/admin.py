@@ -46,3 +46,17 @@ async def vip2(bot,update):
 	addpre(int(user_id))
 	await update.message.edit("Added Successfully To Premium Upload Limit 50GB")
 	await bot.send_message(user_id,"👋 Hello Dude, You Are Upgraded To VIP 2 Check Your Plan Use This Command /myplan")
+
+@Client.on_message(filters.private & filters.user(ADMIN) & filters.command(["removepremium"]))
+async def remove_premium_command(c, m):
+    if len(m.command) >= 2:
+        try:
+            user_id = m.text.split(' ', 1)[1]
+            success = remove_premium_function(int(user_id))
+            if success:
+                await m.reply_text("Premium membership removed successfully. User's limits have been reset.")
+            else:
+                await m.reply_text("Failed to remove premium membership.")
+        except Exception as e:
+            await m.reply_text("Failed to remove premium membership.")
+            print(e)
