@@ -418,7 +418,7 @@ async def video(bot, update, file_id):
 @Client.on_callback_query(filters.regex('confirm'))
 async def confirm_data(bot, callback_query):
 	
-        chat_id = callback_query.chat.id
+        chat_id = callback_query.message.chat.id
        
         data = batch_data.pop(chat_id)
 
