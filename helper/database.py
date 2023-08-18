@@ -134,4 +134,5 @@ def remove_premium_function(chat_id):
         dbcol.update_one({"_id": chat_id}, {"$set": {"prexdate": None}})
         uploadlimit(chat_id, 0)  # Reset upload limit to 0 or any other default value
         usertype(chat_id, "Free")  # Set the user type back to Free
-	    
+    except:
+        pass   
