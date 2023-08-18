@@ -223,50 +223,52 @@ async def confirm_batch_data(_, callback_query):
         if chat_id in batch_confirmations and batch_confirmations[chat_id]:
             batch_confirmations[chat_id] = False
             await callback_query.message.edit_text("Renaming process has been confirmed. Starting...")
-            
-                data = batch_data.pop(chat_id)
-    
-                start_post_id = data["start_post_id"]
-                end_post_id = data["end_post_id"]
-                source_channel_id = data["source_channel_id"]
-                dest_channel_id = data["dest_channel_id"]
-    
-                thumbnail_file_id = str(message.photo.file_id)
 
-                await message.reply_text("renaming started...")
+            data = batch_data.pop(chat_id)
 
-                try:
-        # Enqueue messages for processing
-                    for post_id in range(start_post_id, end_post_id + 1):
-                        await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+            start_post_id = data["start_post_id"]
+            end_post_id = data["end_post_id"]
+            source_channel_id = data["source_channel_id"]
+            dest_channel_id = data["dest_channel_id"]
 
-        # Process messages from the queue
-                    while not message_queue.empty():
-                        source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
+            thumbnail_file_id = str(callback_query.message.photo[-1].file_id)  # Assuming the last photo
 
-                        try:
-                # Copy the message from the source channel
-                            Rkbotz = await client.copy_message(
-                                chat_id=dest_id,
-                                from_chat_id=source_id,
-                                message_id=post_id
-                            )
+            await callback_query.message.reply_text("Renaming started...")
 
-                # Determine media type and invoke appropriate callback
-                            await video(client, Rkbotz, thumbnail_file_id)
-                
-                # Delete the original message from the destination channel
-                            await client.delete_messages(dest_id, Rkbotz.id)
-                            await client.delete_messages(dest_id, Rkbotz.id + 1)
-		    
+            try:
+                # Enqueue messages for processing
+                for post_id in range(start_post_id, end_post_id + 1):
+                    await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
-                        except Exception as e:
-                            await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+                # Process messages from the queue
+                while not message_queue.empty():
+                    source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
-                    await message.reply_text("renaming completed...")
+                    try:
+                        # Copy the message from the source channel
+                        Rkbotz = await client.copy_message(
+                            chat_id=dest_id,
+                            from_chat_id=source_id,
+                            message_id=post_id
+                        )
 
-                except Exception as e:
-                    await message.reply_text(f"Error: {str(e)}")
+                        # Determine media type and invoke appropriate callback
+                        await video(client, Rkbotz, thumbnail_file_id)
+
+                        # Delete the original message from the destination channel
+                        await client.delete_messages(dest_id, Rkbotz.id)
+                        await client.delete_messages(dest_id, Rkbotz.id + 1)
+
+                    except Exception as e:
+                        await callback_query.message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+                await callback_query.message.reply_text("Renaming completed...")
+
+            except Exception as e:
+                await callback_query.message.reply_text(f"Error: {str(e)}")
+
+    except Exception as e:
+        print(f"Callback query error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
