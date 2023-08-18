@@ -295,13 +295,13 @@ async def thumbnail_received(client, message):
 async def stop_renaming_button(client, callback_query):
     global should_continue_renaming
     should_continue_renaming = False
-    await callback_query.answer("Renaming process has been stopped.")
+    await callback_query.reply("Renaming process has been stopped.")
 
 @Client.on_callback_query(filters.regex("startrenaming"))
 async def start_renaming_button(client, callback_query):
     global should_continue_renaming
     should_continue_renaming = True
-    await callback_query.answer("please provide thumbnail image for renamimg.")
+    await callback_query.reply("please provide thumbnail image for renamimg.")
 	
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
