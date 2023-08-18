@@ -26,6 +26,7 @@ DB_CHANNEL_ID = -1001862896786  # Replace with your channel ID
 message_queue = asyncio.Queue()
 continue_processing = True
 batch_data = {}
+batch_confirmations = {}
 # Define a function to extract message ID from a link
 def extract_post_id(link):
     match = re.search(r"/(\d+)/?$", link)
@@ -214,11 +215,22 @@ async def batch_rename(client, message):
 
 # Handler for receiving the thumbnail image
 # Main message processing function
-@Client.on_message(filters.private & filters.command("stop", prefixes="/"))
-async def stop_command(_, message):
-    global continue_processing
-    continue_processing = False
-    await message.reply_text("**Processing has been stopped.**")
+
+@Client.on_callback_query(filters.regex('confirm'))
+async def confirm_batch_data(_, callback_query: CallbackQuery):
+    try:
+        chat_id = callback_query.message.chat.id
+        if chat_id in batch_confirmations and batch_confirmations[chat_id]:
+            batch_confirmations[chat_id] = False
+            await callback_query.message.edit_text("Renaming process has been confirmed. Starting...")
+            
+            data = batch_data.pop(chat_id)
+            await process_batch_data(data, callback_query.message, message_queue, client)
+        else:
+            await callback_query.answer("Please click the 'Confirm' button to start renaming.")
+
+    except Exception as e:
+        await callback_query.answer(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
@@ -226,9 +238,10 @@ async def thumbnail_received(client, message):
     if chat_id not in batch_data:
         file_id = str(message.photo.file_id)
         addthumb(message.chat.id, file_id)
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	    
-#	    return 
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
+        return 
     
+    batch_confirmations[chat_id] = True
     confirm_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Confirm", callback_data="confirm"),
          InlineKeyboardButton("Cancel", callback_data="cancel")]
@@ -238,13 +251,10 @@ async def thumbnail_received(client, message):
         "Do you want to use this photo as the custom thumbnail?",
         reply_markup=confirm_markup
     )
-	
-    data = batch_data.pop(chat_id)
-    await process_batch_data(data, message, message_queue, client)
     return
 	
 # callback data 
-@Client.on_callback_query(filters.regex('confirm'))
+
 async def process_batch_data(data, message, message_queue, client):
     try:
         start_post_id = data["start_post_id"]
