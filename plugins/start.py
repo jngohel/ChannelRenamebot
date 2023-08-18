@@ -22,7 +22,7 @@ log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
-
+ADMIN = int(os.environ.get("ADMIN", 923943045))
 message_queue = asyncio.Queue()
 
 batch_data = {}
@@ -178,7 +178,7 @@ async def send_doc(client,message):
 
 
 
-@Client.on_message(filters.private & filters.command(["batch"]))
+@Client.on_message(filters.private & filters.user(ADMIN) & filters.command(["batch"]))
 async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
@@ -296,7 +296,7 @@ async def start_renaming_button(client, callback_query):
 
 
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
-@Client.on_message(filters.private & filters.command(["rename_all"]))
+@Client.on_message(filters.private & filters.user(ADMIN) & filters.command(["rename_all"]))
 async def all_rename(bot, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
@@ -323,3 +323,8 @@ async def all_rename(bot, message):
         "dest_channel_id": -1001835537776,   # Replace with the actual destination channel ID
 	}
 	
+@Client.on_message(filters.command(["help"]))
+async def help_command(bot, message):
+    await message.reply("This bot is only for private use by owner.\n\ncommands list \n\n1./addpremium userid\n2. /batch link1 link2\n3. /rename_all\n4./removepremium userid")
+        
+	     
