@@ -50,10 +50,9 @@ async def vip2(bot,update):
 @Client.on_message(filters.private & filters.user(ADMIN) & filters.command(["removepremium"]))
 async def remove_premium_command(c, m):
     if len(m.command) >= 2:
-        try:
-            user_id = m.text.split(' ', 1)[1]
-            inlimit = 0
-	    uploadlimit(int(user_id),0)
-	    usertype(int(user_id),"Free")
-            await m.reply_text("Premium membership removed successfully. User's limits have been reset.")
+        user_id = m.text.split(' ', 1)[1]
+        inlimit = 0
+	uploadlimit(int(user_id),0)
+	usertype(int(user_id),"Free")
+        await m.reply_text("Premium membership removed successfully. User's limits have been reset.")
             
