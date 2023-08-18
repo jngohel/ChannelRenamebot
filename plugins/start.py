@@ -244,6 +244,7 @@ async def thumbnail_received(client, message):
     return
 	
 # callback data 
+@Client.on_callback_query(filters.regex('confirm'))
 async def process_batch_data(data, message, message_queue, client):
     try:
         start_post_id = data["start_post_id"]
