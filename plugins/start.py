@@ -263,7 +263,7 @@ async def thumbnail_received(client, message):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
             # Process messages from the queue
-         while not message_queue.empty() and should_continue_renaming:
+        while not message_queue.empty() and should_continue_renaming:
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
             try:
