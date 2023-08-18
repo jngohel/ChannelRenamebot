@@ -413,3 +413,62 @@ async def video(bot, update, file_id):
             await ms.edit(str(e))
             os.remove(file_path)
             return
+		
+@Client.on_callback_query(filters.regex('confirm'))
+async def confirm_data(bot, callback_query):
+    try:
+        chat_id = callback_query.message.chat.id
+        if chat_id in batch_confirmations and batch_confirmations[chat_id]:
+            batch_confirmations[chat_id] = False
+            await callback_query.message.edit_text("Renaming process has been confirmed. Starting...")
+
+            data = batch_data.pop(chat_id)
+
+            start_post_id = data["start_post_id"]
+            end_post_id = data["end_post_id"]
+            source_channel_id = data["source_channel_id"]
+            dest_channel_id = data["dest_channel_id"]
+
+            thumbnail_file_id = None
+
+            if callback_query.message.photo:
+                thumbnail_file_id = str(callback_query.message.photo[-1].file_id)
+
+            await callback_query.message.reply_text("Renaming started...")
+
+            try:
+                # Enqueue messages for processing
+                for post_id in range(start_post_id, end_post_id + 1):
+                    await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+
+                # Process messages from the queue
+                while not message_queue.empty():
+                    source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
+
+                    try:
+                        # Copy the message from the source channel
+                        Rkbotz = await bot.copy_message(
+                            chat_id=dest_id,
+                            from_chat_id=source_id,
+                            message_id=post_id
+                        )
+
+                        # Determine media type and invoke appropriate callback
+                        await video(bot, Rkbotz, thumbnail_file_id)
+
+                        # Delete the original message from the destination channel
+                        await bot.delete_messages(dest_id, Rkbotz.id)
+                        await bot.delete_messages(dest_id, Rkbotz.id + 1)
+
+                    except Exception as e:
+                        await callback_query.message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+                await callback_query.message.reply_text("Renaming completed...")
+
+            except Exception as e:
+                await callback_query.message.reply_text(f"Error: {str(e)}")
+
+
+    except Exception as e:
+        print(f"Callback query error: {str(e)}")
+
