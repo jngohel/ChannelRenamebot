@@ -201,8 +201,19 @@ async def batch_rename(client, message):
     dest_channel_id = -1001862896786    # Replace with the actual destination channel ID
 
     # Ask user for a thumbnail image
-    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+    buttons = [
+        [
+            InlineKeyboardButton("Start Renaming", callback_data="startrenaming")
+        ]
+    ]
 
+    keyboard_markup = InlineKeyboardMarkup(buttons)
+
+    await message.reply_text(
+        "First click on start renameing button. For next steps 😅",
+        reply_markup=keyboard_markup
+    )
+    
     # Store data for later use
     batch_data[message.chat.id] = {
         "start_post_id": start_post_id,
@@ -232,8 +243,19 @@ async def thumbnail_received(client, message):
     
     thumbnail_file_id = str(message.photo.file_id)
 
-    await message.reply_text("renaming started...")
+    
+    buttons = [
+        [
+            InlineKeyboardButton("Stop Renaming", callback_data="stop")
+        ]
+    ]
 
+    keyboard_markup = InlineKeyboardMarkup(buttons)
+
+    await message.reply_text(
+        "Renaming Started 😅",
+        reply_markup=keyboard_markup
+    )
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             if not should_continue_renaming:
@@ -241,7 +263,7 @@ async def thumbnail_received(client, message):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
             # Process messages from the queue
-        while not message_queue.empty() and should_continue_renaming:
+         while not message_queue.empty() and should_continue_renaming:
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
             try:
@@ -269,17 +291,17 @@ async def thumbnail_received(client, message):
         await message.reply_text(f"Error: {str(e)}")
 
 # Define a command handler to stop the renaming process
-@Client.on_message(filters.command("stop"))
-async def stop_renaming(client, message):
+@Client.on_callback_query(filters.regex("stop"))
+async def stop_renaming_button(client: Client, callback_query: CallbackQuery):
     global should_continue_renaming
     should_continue_renaming = False
-    await message.reply_text("Renaming process has been stopped.")
-	
-@Client.on_message(filters.command("startrenaming"))
-async def start_renaming(client, message):
+    await callback_query.answer("Renaming process has been stopped.")
+
+@Client.on_callback_query(filters.regex("startrenaming"))
+async def start_renaming_button(client: Client, callback_query: CallbackQuery):
     global should_continue_renaming
     should_continue_renaming = True
-    await message.reply_text("Renaming process has been started.")
+    await callback_query.answer("please provide thumbnail image for renamimg.")
 	
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
