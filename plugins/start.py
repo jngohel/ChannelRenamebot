@@ -292,13 +292,13 @@ async def thumbnail_received(client, message):
 
 # Define a command handler to stop the renaming process
 @Client.on_callback_query(filters.regex("stop"))
-async def stop_renaming_button(client: Client, callback_query: CallbackQuery):
+async def stop_renaming_button(client, callback_query):
     global should_continue_renaming
     should_continue_renaming = False
     await callback_query.answer("Renaming process has been stopped.")
 
 @Client.on_callback_query(filters.regex("startrenaming"))
-async def start_renaming_button(client: Client, callback_query: CallbackQuery):
+async def start_renaming_button(client, callback_query):
     global should_continue_renaming
     should_continue_renaming = True
     await callback_query.answer("please provide thumbnail image for renamimg.")
