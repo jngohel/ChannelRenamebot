@@ -280,7 +280,7 @@ async def confirm_batch_data(_, callback_query):
                         )
 
                         # Determine media type and invoke appropriate callback
-                        await video(client, Rkbotz, thumbnail_file_id)
+                        await video(Rkbotz, thumbnail_file_id)
 
                         # Delete the original message from the destination channel
                         await client.delete_messages(dest_id, Rkbotz.id)
