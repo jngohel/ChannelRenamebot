@@ -222,72 +222,74 @@ async def stop_command(_, message):
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
-    global continue_processing
-
-    if not continue_processing:
-        await message.reply_text("**Processing has been stopped.**")
-        return
-
     chat_id = message.chat.id
-
     if chat_id not in batch_data:
         file_id = str(message.photo.file_id)
         addthumb(message.chat.id, file_id)
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
-
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	    
+#	    return 
+    
+    confirm_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Confirm", callback_data="confirm"),
+         InlineKeyboardButton("Cancel", callback_data="cancel")]
+    ])
+        
+    await message.reply_text(
+        "Do you want to use this photo as the custom thumbnail?",
+        reply_markup=confirm_markup
+    )
+	
     data = batch_data.pop(chat_id)
-
-    start_post_id = data["start_post_id"]
-    end_post_id = data["end_post_id"]
-    source_channel_id = data["source_channel_id"]
-    dest_channel_id = data["dest_channel_id"]
-
-    thumbnail_file_id = str(message.photo.file_id)
-
-    await message.reply_text("Renaming started...")
-
+    await process_batch_data(data, message, message_queue, client)
+    return
+	
+# callback data 
+async def process_batch_data(data, message, message_queue, client):
     try:
-        # Enqueue messages for processing
-        for post_id in range(start_post_id, end_post_id + 1):
-            if not continue_processing:
-                await message.reply_text("**Processing has been stopped.**")
-                return
+        start_post_id = data["start_post_id"]
+        end_post_id = data["end_post_id"]
+        source_channel_id = data["source_channel_id"]
+        dest_channel_id = data["dest_channel_id"]
 
-            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+        thumbnail_file_id = str(message.photo.file_id)
 
-        # Process messages from the queue
+        await message.reply_text("Renaming started...")
 
-        while not message_queue.empty():
-            if not continue_processing:
-                await message.reply_text("**Processing has been stopped.**")
-                return
+        try:
+            # Enqueue messages for processing
+            for post_id in range(start_post_id, end_post_id + 1):
+                await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
-            source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
+            # Process messages from the queue
+            while not message_queue.empty():
+                source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
-            try:
-        # Copy the message from the source channel
-                Rkbotz = await client.copy_message(
-                    chat_id=dest_id,
-                    from_chat_id=source_id,
-                    message_id=post_id
-                )
+                try:
+                    # Copy the message from the source channel
+                    copied_message = await client.copy_message(
+                        chat_id=dest_id,
+                        from_chat_id=source_id,
+                        message_id=post_id
+                    )
 
-        # Determine media type and invoke appropriate callback
-                await video(client, Rkbotz, thumbnail_file_id)
-                
-                # Delete the original message from the destination channel
-                await client.delete_messages(dest_id, Rkbotz.id)
-                await client.delete_messages(dest_id, Rkbotz.id + 1)
-		    
+                    # Determine media type and invoke appropriate callback
+                    await video(client, copied_message, thumbnail_file_id)
 
-            except Exception as e:
-                await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+                    # Delete the original message from the destination channel
+                    await client.delete_messages(dest_id, copied_message.id)
+                    await client.delete_messages(dest_id, copied_message.id + 1)
 
-        await message.reply_text("renaming completed...")
+                except Exception as e:
+                    await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+            await message.reply_text("Renaming completed!")
+
+        except Exception as e:
+            await message.reply_text(f"Error while processing messages: {str(e)}")
 
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
-    #await message.reply_text("renaming completed...")    
+
 
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
