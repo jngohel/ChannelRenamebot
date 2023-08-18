@@ -127,7 +127,13 @@ def get_channel_thumbnail(chat_id):
         return document["file_id"]
     else:
         return None
-
+def remove_premium_function(chat_id):
+    try:
+        # Assuming you have a database collection named "dbcol" to store user data
+        # You might need to replace this with the actual name of your collection
+        dbcol.update_one({"_id": chat_id}, {"$set": {"prexdate": None}})
+        uploadlimit(chat_id, 0)  # Reset upload limit to 0 or any other default value
+        usertype(chat_id, "Free")  # Set the user type back to Free
 def delete_channel(chat_id):
     channel_col.delete_one({"_id": chat_id})
 
