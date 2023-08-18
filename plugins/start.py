@@ -256,35 +256,35 @@ async def thumbnail_received(client, message):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
         # Process messages from the queue
+
         while not message_queue.empty():
             if not continue_processing:
                 await message.reply_text("**Processing has been stopped.**")
                 return
 
-            source_id, dest_id, post_id, thumbnail_file_id = message_queue.get()
+            source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
             try:
-                # Copy the message from the source channel
+        # Copy the message from the source channel
                 Rkbotz = await client.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
                     message_id=post_id
                 )
 
-                # Determine media type and invoke appropriate callback
+        # Determine media type and invoke appropriate callback
                 await video(client, Rkbotz, thumbnail_file_id)
 
-                # Delete the original message from the destination channel
+        # Delete the original message from the destination channel
                 await client.delete_messages(dest_id, Rkbotz.message_id)
+		await client.delete_messages(dest_id, Rkbotz.message_id + 1)
+		
+            await message.reply_text("Renaming completed...")
+		
 
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-
-        await message.reply_text("Renaming completed...")
-
-    except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
-
+	    
 
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
