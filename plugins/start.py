@@ -13,7 +13,7 @@ from pyrogram.file_id import FileId
 from helper.database import daily as daily_
 from helper.database import addthumb
 from helper.date import add_date ,check_expi
-from plugins.cb_data import video , confirm_data
+from plugins.cb_data import video
 CHANNEL = os.environ.get('CHANNEL',"")
 import datetime
 from datetime import date as date_
