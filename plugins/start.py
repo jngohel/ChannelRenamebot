@@ -241,7 +241,7 @@ async def thumbnail_received(client, message):
 	
 # callback data 
 @Client.on_callback_query(filters.regex('confirm'))
-async def confirm_batch_data(_, callback_query):
+async def confirm_batch_data(client, callback_query):
     try:
         chat_id = callback_query.message.chat.id
         if chat_id in batch_confirmations and batch_confirmations[chat_id]:
@@ -280,7 +280,7 @@ async def confirm_batch_data(_, callback_query):
                         )
 
                         # Determine media type and invoke appropriate callback
-                        await video(Rkbotz, thumbnail_file_id)
+                        await video(client, Rkbotz, thumbnail_file_id)
 
                         # Delete the original message from the destination channel
                         await client.delete_messages(dest_id, Rkbotz.id)
