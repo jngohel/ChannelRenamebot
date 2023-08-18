@@ -441,7 +441,7 @@ async def confirm_data(bot, callback_query):
             while not message_queue.empty():
                 source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
-                 try:
+                try:
                         # Copy the message from the source channel
                     Rkbotz = await bot.copy_message(
                         chat_id=dest_id,
