@@ -216,6 +216,30 @@ async def batch_rename(client, message):
 # Handler for receiving the thumbnail image
 # Main message processing function
 
+
+
+@Client.on_message(filters.private & filters.photo)
+async def thumbnail_received(client, message):
+    chat_id = message.chat.id
+    if chat_id not in batch_data:
+        file_id = str(message.photo.file_id)
+        addthumb(message.chat.id, file_id)
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
+        return 
+    
+    batch_confirmations[chat_id] = True
+    confirm_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Confirm", callback_data="confirm"),
+         InlineKeyboardButton("Cancel", callback_data="cancel")]
+    ])
+        
+    await message.reply_text(
+        "Do you want to use this photo as the custom thumbnail?",
+        reply_markup=confirm_markup
+    )
+    
+	
+# callback data 
 @Client.on_callback_query(filters.regex('confirm'))
 async def confirm_batch_data(_, callback_query):
     try:
@@ -265,33 +289,10 @@ async def confirm_batch_data(_, callback_query):
                 await callback_query.message.reply_text("Renaming completed...")
 
             except Exception as e:
-                await callback_query.message.reply_text(f"Error: {str(e)}")
+                await callback_query.message.reply_text(f"Error: {str(e)}}")
 
     except Exception as e:
         print(f"Callback query error: {str(e)}")
-
-@Client.on_message(filters.private & filters.photo)
-async def thumbnail_received(client, message):
-    chat_id = message.chat.id
-    if chat_id not in batch_data:
-        file_id = str(message.photo.file_id)
-        addthumb(message.chat.id, file_id)
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
-        return 
-    
-    batch_confirmations[chat_id] = True
-    confirm_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Confirm", callback_data="confirm"),
-         InlineKeyboardButton("Cancel", callback_data="cancel")]
-    ])
-        
-    await message.reply_text(
-        "Do you want to use this photo as the custom thumbnail?",
-        reply_markup=confirm_markup
-    )
-    
-	
-# callback data 
 
 
 
