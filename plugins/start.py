@@ -235,12 +235,13 @@ async def thumbnail_received(client, message):
     await message.reply_text("renaming started...")
 
     try:
-        # Enqueue messages for processing
         for post_id in range(start_post_id, end_post_id + 1):
+            if not should_continue_renaming:
+                break  # Stop processing if flag is set to False
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
-        # Process messages from the queue
-        while not message_queue.empty():
+            # Process messages from the queue
+        while not message_queue.empty() and should_continue_renaming:
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
             try:
@@ -267,6 +268,13 @@ async def thumbnail_received(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
 
+# Define a command handler to stop the renaming process
+@Client.on_message(filters.command("stop"))
+async def stop_renaming(client, message):
+    global should_continue_renaming
+    should_continue_renaming = False
+    await message.reply_text("Renaming process has been stopped.")
+	
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
 async def all_rename(bot, message):
