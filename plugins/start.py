@@ -215,67 +215,57 @@ async def batch_rename(client, message):
 # Define your handler for receiving the thumbnail image
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
-    thumbnail_filez_id = str(message.photo.file_id)
     chat_id = message.chat.id
     if chat_id not in batch_data:
         file_id = str(message.photo.file_id)
         addthumb(message.chat.id, file_id)
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
-        return
-	    
-
-    await message.reply_text("Do you want to proceed with the renaming? (yes/no)")
-        
-    user_response = message.text.strip().lower()
-    if user_response == "yes":
-        data = batch_data.pop(chat_id)
-
-
-        start_post_id = data["start_post_id"]
-        end_post_id = data["end_post_id"]
-        source_channel_id = data["source_channel_id"]
-        dest_channel_id = data["dest_channel_id"]
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")	    
+#	    return 
     
-        thumbnail_file_id = thumbnail_filez_id
-        await message.reply_text("Renaming started...")
-        try:
+    
+    data = batch_data.pop(chat_id)
+    
+    start_post_id = data["start_post_id"]
+    end_post_id = data["end_post_id"]
+    source_channel_id = data["source_channel_id"]
+    dest_channel_id = data["dest_channel_id"]
+    
+    thumbnail_file_id = str(message.photo.file_id)
+
+    await message.reply_text("renaming started...")
+
+    try:
         # Enqueue messages for processing
-            for post_id in range(start_post_id, end_post_id + 1):
-                await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+        for post_id in range(start_post_id, end_post_id + 1):
+            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
         # Process messages from the queue
-            while not message_queue.empty():
-                source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
+        while not message_queue.empty():
+            source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
-                try:
+            try:
                 # Copy the message from the source channel
-                    Rkbotz = await client.copy_message(
-                        chat_id=dest_id,
-                        from_chat_id=source_id,
-                        message_id=post_id
-                    )
+                Rkbotz = await client.copy_message(
+                    chat_id=dest_id,
+                    from_chat_id=source_id,
+                    message_id=post_id
+                )
 
                 # Determine media type and invoke appropriate callback
-                    await video(client, Rkbotz, thumbnail_file_id)
+                await video(client, Rkbotz, thumbnail_file_id)
                 
                 # Delete the original message from the destination channel
-                    await client.delete_messages(dest_id, [Rkbotz.id, Rkbotz.id + 1])
+                await client.delete_messages(dest_id, Rkbotz.id)
+                await client.delete_messages(dest_id, Rkbotz.id + 1)
+		    
 
-                except Exception as e:
-                    await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+            except Exception as e:
+                await message.reply_text(f"Error processing post {post_id}: {str(e)}")
 
-            await message.reply_text("Renaming completed...")
+        await message.reply_text("renaming completed...")
 
-        except Exception as e:
-            await message.reply_text(f"Error: {str(e)}")
-    elif user_response == "no":
-        await message.reply_text("Renaming process cancelled.")
-        
-    
-    else:
-        await message.reply_text("Invalid response. Please type 'yes' or 'no'.")
-
-    
+    except Exception as e:
+        await message.reply_text(f"Error: {str(e)}")
 
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
