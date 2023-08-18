@@ -289,7 +289,8 @@ async def confirm_batch_data(_, callback_query):
                 await callback_query.message.reply_text("Renaming completed...")
 
             except Exception as e:
-                await callback_query.message.reply_text(f"Error: {str(e)}}")
+                await callback_query.message.reply_text(f"Error: {str(e)}")
+
 
     except Exception as e:
         print(f"Callback query error: {str(e)}")
