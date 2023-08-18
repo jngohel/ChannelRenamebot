@@ -255,7 +255,10 @@ async def confirm_batch_data(_, callback_query):
             source_channel_id = data["source_channel_id"]
             dest_channel_id = data["dest_channel_id"]
 
-            thumbnail_file_id = str(callback_query.message.photo[-1].file_id)  # Assuming the last photo
+            thumbnail_file_id = None
+
+            if callback_query.message.photo:
+                thumbnail_file_id = str(callback_query.message.photo[-1].file_id)
 
             await callback_query.message.reply_text("Renaming started...")
 
