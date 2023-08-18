@@ -275,6 +275,12 @@ async def stop_renaming(client, message):
     should_continue_renaming = False
     await message.reply_text("Renaming process has been stopped.")
 	
+@Client.on_message(filters.command("startrenaming"))
+async def start_renaming(client, message):
+    global should_continue_renaming
+    should_continue_renaming = True
+    await message.reply_text("Renaming process has been started.")
+	
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
 async def all_rename(bot, message):
