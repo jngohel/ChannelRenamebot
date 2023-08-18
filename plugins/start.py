@@ -235,16 +235,21 @@ async def thumbnail_received(client, message):
 
     # Wait for user input (confirmation or unconfirmation)
     while True:
-        response = await client.listen(filters=filters.text & filters.private & filters.user(message.from_user.id))
+        response = await client.get_messages(
+            chat_id=message.chat.id,
+            message_ids=message.message_id,
+            filters=filters.text & filters.private & filters.user(message.from_user.id)
+        )
     
         if "/confirm" in response.text:
-            await message.reply_text("You confirmed...")
+            await message.reply_text("You confirmed. Renaming started...")
             break  # Exit the loop when confirmation is received
         elif "/unconfirm" in response.text:
             await message.reply_text("You unconfirmed. Process terminated.")
             return 
 
     await message.reply_text("Renaming started...")
+
 
     try:
         # Enqueue messages for processing
