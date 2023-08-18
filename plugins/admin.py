@@ -52,11 +52,8 @@ async def remove_premium_command(c, m):
     if len(m.command) >= 2:
         try:
             user_id = m.text.split(' ', 1)[1]
-            success = remove_premium_function(int(user_id))
-            if success:
-                await m.reply_text("Premium membership removed successfully. User's limits have been reset.")
-            else:
-                await m.reply_text("Failed to remove premium membership.")
-        except Exception as e:
-            await m.reply_text("Failed to remove premium membership.")
-            print(e)
+            inlimit = 0
+	    uploadlimit(int(user_id),0)
+	    usertype(int(user_id),"Free")
+            await m.reply_text("Premium membership removed successfully. User's limits have been reset.")
+            
