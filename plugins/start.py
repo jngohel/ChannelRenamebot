@@ -224,13 +224,49 @@ async def confirm_batch_data(_, callback_query):
             batch_confirmations[chat_id] = False
             await callback_query.message.edit_text("Renaming process has been confirmed. Starting...")
             
-            data = batch_data.pop(chat_id)
-            await process_batch_data(data, callback_query.message, message_queue, client)
-        else:
-            await callback_query.answer("Please click the 'Confirm' button to start renaming.")
+                data = batch_data.pop(chat_id)
+    
+                start_post_id = data["start_post_id"]
+                end_post_id = data["end_post_id"]
+                source_channel_id = data["source_channel_id"]
+                dest_channel_id = data["dest_channel_id"]
+    
+                thumbnail_file_id = str(message.photo.file_id)
 
-    except Exception as e:
-        await callback_query.answer(f"Error: {str(e)}")
+                await message.reply_text("renaming started...")
+
+                try:
+        # Enqueue messages for processing
+                    for post_id in range(start_post_id, end_post_id + 1):
+                        await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+
+        # Process messages from the queue
+                    while not message_queue.empty():
+                        source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
+
+                        try:
+                # Copy the message from the source channel
+                            Rkbotz = await client.copy_message(
+                                chat_id=dest_id,
+                                from_chat_id=source_id,
+                                message_id=post_id
+                            )
+
+                # Determine media type and invoke appropriate callback
+                            await video(client, Rkbotz, thumbnail_file_id)
+                
+                # Delete the original message from the destination channel
+                            await client.delete_messages(dest_id, Rkbotz.id)
+                            await client.delete_messages(dest_id, Rkbotz.id + 1)
+		    
+
+                        except Exception as e:
+                            await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+                    await message.reply_text("renaming completed...")
+
+                except Exception as e:
+                    await message.reply_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
@@ -251,55 +287,11 @@ async def thumbnail_received(client, message):
         "Do you want to use this photo as the custom thumbnail?",
         reply_markup=confirm_markup
     )
-    return
+    
 	
 # callback data 
 
-async def process_batch_data(data, message, message_queue, client):
-    try:
-        start_post_id = data["start_post_id"]
-        end_post_id = data["end_post_id"]
-        source_channel_id = data["source_channel_id"]
-        dest_channel_id = data["dest_channel_id"]
 
-        thumbnail_file_id = str(message.photo.file_id)
-
-        await message.reply_text("Renaming started...")
-
-        try:
-            # Enqueue messages for processing
-            for post_id in range(start_post_id, end_post_id + 1):
-                await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
-
-            # Process messages from the queue
-            while not message_queue.empty():
-                source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
-
-                try:
-                    # Copy the message from the source channel
-                    copied_message = await client.copy_message(
-                        chat_id=dest_id,
-                        from_chat_id=source_id,
-                        message_id=post_id
-                    )
-
-                    # Determine media type and invoke appropriate callback
-                    await video(client, copied_message, thumbnail_file_id)
-
-                    # Delete the original message from the destination channel
-                    await client.delete_messages(dest_id, copied_message.id)
-                    await client.delete_messages(dest_id, copied_message.id + 1)
-
-                except Exception as e:
-                    await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-
-            await message.reply_text("Renaming completed!")
-
-        except Exception as e:
-            await message.reply_text(f"Error while processing messages: {str(e)}")
-
-    except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
 
 
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
