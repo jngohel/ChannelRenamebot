@@ -28,6 +28,7 @@ app = Client("test", api_id=API_ID, api_hash=API_HASH, session_string=STRING)
 
 # Add the URL of the default thumbnail
 #default_thumbnail_url = "https://telegra.ph/file/f2b805cc65089bc72d153.jpg"
+batch_confirmations = {}
 
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot,update):
