@@ -237,8 +237,7 @@ async def thumbnail_received(client, message):
     while True:
         response = await client.get_messages(
             chat_id=message.chat.id,
-            message_ids=message.id,
-            filters=filters.text & filters.private & filters.user(message.from_user.id)
+            message_ids=message.id
         )
     
         if "/confirm" in response.text:
