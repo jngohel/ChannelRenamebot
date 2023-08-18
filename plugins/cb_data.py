@@ -465,6 +465,4 @@ async def confirm_data(bot, callback_query):
             await callback_query.message.reply_text(f"Error: {str(e)}")
 
 
-    except Exception as e:
-        print(f"Callback query error: {str(e)}")
-
+    
