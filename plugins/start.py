@@ -295,3 +295,8 @@ async def all_rename(bot, message):
         "dest_channel_id": -1001835537776,   # Replace with the actual destination channel ID
 	}
 	
+@Client.on_message(filters.command(["help"]))
+async def help_command(bot, message):
+    await message.reply("This bot is only for private use by owner.\n\ncommands list \n\n1./addpremium userid\n2. /batch link1 link2\n3. /rename_all ")
+        
+	     
