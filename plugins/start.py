@@ -277,14 +277,11 @@ async def thumbnail_received(client, message):
 
         # Delete the original message from the destination channel
                 await client.delete_messages(dest_id, Rkbotz.message_id)
-		await client.delete_messages(dest_id, Rkbotz.message_id + 1)
-		
-            await message.reply_text("Renaming completed...")
-		
-
+		await client.delete_messages(dest_id, Rkbotz.message_id + 1)		            		
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-	    
+
+    await message.reply_text("renaming completed...")    
 
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
 @Client.on_message(filters.private & filters.command(["rename_all"]))
