@@ -178,7 +178,7 @@ async def send_doc(client,message):
 
 
 
-@Client.on_message(filters.private & filters.user(ADMIN) & filters.command(["batch"]))
+@Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
