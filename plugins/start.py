@@ -24,7 +24,7 @@ botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
 ADMIN = int(os.environ.get("ADMIN", 923943045))
 message_queue = asyncio.Queue()
-
+continue_processing = True
 batch_data = {}
 # Define a function to extract message ID from a link
 def extract_post_id(link):
