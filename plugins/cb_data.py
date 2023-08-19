@@ -188,7 +188,7 @@ async def vid(bot,update):
         new_tex = escape_invalid_curly_brackets(c_caption,vid_list)
         caption = new_tex.format(filename=new_filename,filesize=humanbytes(file.file_size),duration=timedelta(seconds=duration))
      else:
-        caption = f"**{new_filename}**"
+        caption = f"<i>{new_filename}</i>"
      if thumb:
      		ph_path = await bot.download_media(thumb)
      		Image.open(ph_path).convert("RGB").save(ph_path)
@@ -356,7 +356,7 @@ async def video(bot, update, file_id):
     if metadata.has("duration"):
         duration = metadata.get('duration').seconds
 
-    caption = f"**<i>[@Filmy_Fundas]➛</i>** <i>{new_filename}</i>"
+    caption = f"<i>{new_filename}</i>"
     thumb_path = await bot.download_media(c_thumb) 
     try:
        with Image.open(thumb_path) as img:
