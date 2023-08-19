@@ -24,6 +24,7 @@ botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
 ADMIN = int(os.environ.get("ADMIN", 923943045))
 message_queue = asyncio.Queue()
+should_continue_renaming = True
 continue_processing = True
 batch_data = {}
 # Define a function to extract message ID from a link
@@ -178,7 +179,7 @@ async def send_doc(client,message):
 
 
 
-@Client.on_message(filters.private & filters.command(["batch"]))
+@Client.on_message(filters.private  & filters.user(ADMIN) & filters.command(["batch"]))
 async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
