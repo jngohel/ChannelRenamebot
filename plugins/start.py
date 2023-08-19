@@ -22,10 +22,9 @@ log_channel = int(os.environ.get("LOG_CHANNEL",""))
 token = os.environ.get('TOKEN','')
 botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
-ADMIN = int(os.environ.get("ADMIN", 923943045))
+
 message_queue = asyncio.Queue()
-should_continue_renaming = True
-continue_processing = True
+
 batch_data = {}
 # Define a function to extract message ID from a link
 def extract_post_id(link):
@@ -179,7 +178,7 @@ async def send_doc(client,message):
 
 
 
-@Client.on_message(filters.private  & filters.user(ADMIN) & filters.command(["batch"]))
+@Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
@@ -214,8 +213,6 @@ async def batch_rename(client, message):
     }
 
 # Handler for receiving the thumbnail image
-
-# Define your handler for receiving the thumbnail image
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
@@ -235,27 +232,15 @@ async def thumbnail_received(client, message):
     
     thumbnail_file_id = str(message.photo.file_id)
 
-    
-    buttons = [
-        [
-            InlineKeyboardButton("Stop Renaming", callback_data="stop")
-        ]
-    ]
+    await message.reply_text("renaming started...")
 
-    keyboard_markup = InlineKeyboardMarkup(buttons)
-
-    await message.reply_text(
-        "Renaming Started 😅",
-        reply_markup=keyboard_markup
-    )
     try:
+        # Enqueue messages for processing
         for post_id in range(start_post_id, end_post_id + 1):
-            if not should_continue_renaming:
-                break  # Stop processing if flag is set to False
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
 
-            # Process messages from the queue
-        while not message_queue.empty() and should_continue_renaming:
+        # Process messages from the queue
+        while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
 
             try:
@@ -282,22 +267,8 @@ async def thumbnail_received(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
 
-# Define a command handler to stop the renaming process
-@Client.on_callback_query(filters.regex("stop"))
-async def stop_renaming_button(client, callback_query):
-    global should_continue_renaming
-    should_continue_renaming = False
-    await callback_query.message.reply_text("Renaming process has been stopped.")
-
-@Client.on_callback_query(filters.regex("startrenaming"))
-async def start_renaming_button(client, callback_query):
-    global should_continue_renaming
-    should_continue_renaming = True
-    await callback_query.message.reply_text("please provide tumbnail image for renamimg .")
-
-
 # Rename all by Rk_botz search on telegram, or telegram.me/Rk_botz
-@Client.on_message(filters.private & filters.user(ADMIN) & filters.command(["rename_all"]))
+@Client.on_message(filters.private & filters.command(["rename_all"]))
 async def all_rename(bot, message):
     # Check if the command has the correct number of arguments
     if len(message.command) != 3:
@@ -324,8 +295,3 @@ async def all_rename(bot, message):
         "dest_channel_id": -1001835537776,   # Replace with the actual destination channel ID
 	}
 	
-@Client.on_message(filters.command(["help"]))
-async def help_command(bot, message):
-    await message.reply("This bot is only for private use by owner.\n\ncommands list \n\n1./addpremium userid\n2. /batch link1 link2\n3. /rename_all\n4./removepremium userid")
-        
-	     
