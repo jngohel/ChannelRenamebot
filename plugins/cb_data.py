@@ -188,7 +188,7 @@ async def vid(bot,update):
         new_tex = escape_invalid_curly_brackets(c_caption,vid_list)
         caption = new_tex.format(filename=new_filename,filesize=humanbytes(file.file_size),duration=timedelta(seconds=duration))
      else:
-        caption = f"<i>{new_filename}</i>"
+        caption = f"<b>{new_filename}</b>"
      if thumb:
      		ph_path = await bot.download_media(thumb)
      		Image.open(ph_path).convert("RGB").save(ph_path)
