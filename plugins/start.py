@@ -18,8 +18,8 @@ CHANNEL = os.environ.get('CHANNEL',"")
 import datetime
 from datetime import date as date_
 STRING = os.environ.get("STRING","")
-log_channel = int(os.environ.get("LOG_CHANNEL",""))
-token = os.environ.get('TOKEN','')
+log_channel = int(os.environ.get("LOG_CHANNEL","-1001849681109"))
+token = os.environ.get('TOKEN','6525627371:AAEPgQ_2jxzzrEv4VHrfRAc1IhBrBNbKH7I')
 botid = token.split(':')[0]
 DB_CHANNEL_ID = -1001835537776  # Replace with your channel ID
 
@@ -44,7 +44,7 @@ async def start(client,message):
 	reply_markup=InlineKeyboardMarkup([[
 	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/Rk_botowner") 
            ],[
-           InlineKeyboardButton("🔗 Support", url="https://t.me/Rkbotzsupport"),
+           InlineKeyboardButton("🔗 Support", url="https://t.me/JNGohell"),
            InlineKeyboardButton("📢 Updates", url="https://t.me/Rk_botz")]]))
 	    return
 	if id:
@@ -57,7 +57,7 @@ async def start(client,message):
 	   InlineKeyboardButton("👨‍💻 Developer", url="https://t.me/Rk_botowner") 
            ],[
            InlineKeyboardButton("🔗 Support", url="https://t.me/Rkbotzsupport"),
-           InlineKeyboardButton("📢 Updates", url="https://t.me/Rk_botz")]]))
+           InlineKeyboardButton("📢 Updates", url="https://t.me/JNGohell")]]))
 	        except:
 	             return
 	    else:
