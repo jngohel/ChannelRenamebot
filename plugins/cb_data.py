@@ -14,28 +14,17 @@ from datetime import timedelta,datetime
 from helper.ffmpeg import take_screen_shot,fix_thumb
 from helper.progress import humanbytes
 from helper.set import escape_invalid_curly_brackets
-#from helper.database import get_thumbnail
+from bot import API_ID, API_HASH, STRING, LOG_CHANNEL
 
-log_channel = int(os.environ.get("LOG_CHANNEL", ""))
-
-API_ID = int(os.environ.get("API_ID", ""))
-
-API_HASH = os.environ.get("API_HASH", "")
-
-STRING = os.environ.get("STRING", "")
-
+log_channel = LOG_CHANNEL
 app = Client("test", api_id=API_ID, api_hash=API_HASH, session_string=STRING)
-
-# Add the URL of the default thumbnail
-#default_thumbnail_url = "https://telegra.ph/file/f2b805cc65089bc72d153.jpg"
 
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot,update):
 	try:
 		await update.message.delete()
 	except:
-		return
-		
+		return		
 		
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot,update):
@@ -47,9 +36,7 @@ async def rename(bot,update):
 	await update.message.delete()
 	await update.message.reply_text(f"Please Enter The New Filename\n\n✍️ Note: Extension Not Required",reply_to_message_id = id,
 	reply_markup=ForceReply(True) )
-	dateupdate(chat_id,date)
-	
-	
+	dateupdate(chat_id,date)	
 	
 @Client.on_callback_query(filters.regex("doc"))
 async def doc(bot,update):
@@ -140,9 +127,7 @@ async def doc(bot,update):
      			await ms.edit(e)
      			os.remove(file_path)
      			return 
-     			     		   		
-   		
-     		     		     		
+     			     		   		    		     		     		
 @Client.on_callback_query(filters.regex("vid"))
 async def vid(bot,update):
      new_name = update.message.text
